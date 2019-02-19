@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">eAdNepal</string>
+
+    <string-array name="gender">
+        <item> Male </item>
+        <item> Female </item>
+        <item> Other </item>
+        <item> Prefer not to say</item>
+    </string-array>
+
+    <string-array name="location">
+        <item>Accham</item>
+        <item>Bajura</item>
+    </string-array>
+
+    <string-array name="education">
+        <item>SLC/SEE</item>
+        <item>+2 Higher Education</item>
+        <item>Bachelors</item>
+        <item>Masters Degree</item>
+    </string-array>
+
+    <string-array name="geneducation">
+        <item>Commerce</item>
+        <item>Science</item>
+        <item>IT</item>
+        <item>Arts</item>
+        <item>Others</item>
+    </string-array>
+
+</resources>
