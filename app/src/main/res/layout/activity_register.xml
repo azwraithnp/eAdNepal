@@ -209,9 +209,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
-            <com.hootsuite.nachos.NachoTextView
+            <com.azwraithnp.eadnepal.main.Login.CustomNachoTextView
                 android:id="@+id/nacho_text_view"
                 android:layout_width="match_parent"
+                android:editable="false"
                 android:layout_height="wrap_content"
                 android:hint="Enter atleast one interest"/>
         </android.support.design.widget.TextInputLayout>
