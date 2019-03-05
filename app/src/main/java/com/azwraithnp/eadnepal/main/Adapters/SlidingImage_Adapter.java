@@ -10,12 +10,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.azwraithnp.eadnepal.R;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
 
 import java.util.ArrayList;
 
 public class SlidingImage_Adapter extends PagerAdapter {
 
-    private ArrayList<Integer> imageList;
+    private ArrayList<String> imageList;
     private LayoutInflater inflater;
     private Context context;
 
@@ -29,7 +31,7 @@ public class SlidingImage_Adapter extends PagerAdapter {
         return view.equals(o);
     }
 
-    public SlidingImage_Adapter(Context context, ArrayList<Integer> imageModelArrayList) {
+    public SlidingImage_Adapter(Context context, ArrayList<String> imageModelArrayList) {
         this.context = context;
         this.imageList = imageModelArrayList;
         inflater = LayoutInflater.from(context);
@@ -48,7 +50,7 @@ public class SlidingImage_Adapter extends PagerAdapter {
         final ImageView imageView = (ImageView) imageLayout
                 .findViewById(R.id.image);
 
-        imageView.setImageResource(imageList.get(position));
+        Glide.with(context).load("http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position)).into(imageView);
 
         view.addView(imageLayout, 0);
 

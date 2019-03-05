@@ -2,6 +2,7 @@ package com.azwraithnp.eadnepal.main.Login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.azwraithnp.eadnepal.main.Dashboard.Dashboard;
 import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupViews();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("userPref", MODE_PRIVATE);
+
+        if(!(sharedPreferences.getString("user", "").equals("")) && sharedPreferences.getBoolean("autologin", true))
+        {
+            startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", sharedPreferences.getString("user", "")));
+            finish();
+        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,9 +125,18 @@ public class MainActivity extends AppCompatActivity {
 
                     Log.d("User", user.toString());
 
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(user);
+
+                    SharedPreferences mPrefs = getSharedPreferences("userPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putString("user", json);
+                    editor.apply();
+
                     if(Integer.parseInt(status) == 200 && status_message.equals("Logged In"))
                     {
-                        startActivity(new Intent(MainActivity.this, Dashboard.class));
+                        startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", json));
                         finish();
                     }
                     else if(Integer.parseInt(status) == 200 && status_message.equals("Account not found"))
