@@ -132,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences mPrefs = getSharedPreferences("userPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = mPrefs.edit();
                     editor.putString("user", json);
+                    editor.putString("userEmail", email);
+                    editor.putString("userPassword", password);
                     editor.apply();
 
                     if(Integer.parseInt(status) == 200 && status_message.equals("Logged In"))

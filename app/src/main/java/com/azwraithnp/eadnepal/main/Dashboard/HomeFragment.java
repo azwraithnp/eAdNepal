@@ -401,7 +401,12 @@ public class HomeFragment extends Fragment {
 
         indicator.setViewPager(mPager);
 
-        final float density = getResources().getDisplayMetrics().density;
+        float density = 0;
+
+        if(getActivity() !=null)
+        {
+            density = getResources().getDisplayMetrics().density;
+        }
 
         //Set circle indicator radius
         indicator.setRadius(5 * density);

@@ -100,6 +100,15 @@ public class Dashboard extends AppCompatActivity {
 
                         switch (menuItem.getItemId())
                         {
+                            case R.id.nav_profile:
+
+                                ProfileFragment profileFragment = new ProfileFragment();
+
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, profileFragment).commit();
+
+                                toolbar.setTitle("Profile");
+                                break;
+
                             case R.id.nav_audio:
 
                                 AudioFragment audioFragment = new AudioFragment();
