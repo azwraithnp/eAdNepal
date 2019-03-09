@@ -1,7 +1,9 @@
 package com.azwraithnp.eadnepal.main.Dashboard;
 
 
+import android.app.Dialog;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +14,9 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,6 +29,7 @@ import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
 import com.azwraithnp.eadnepal.main.helper_classes.GridSpacingItemDecoration;
+import com.azwraithnp.eadnepal.main.helper_classes.RecyclerItemClickListener;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -80,6 +86,36 @@ public class VideoFragment extends Fragment {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(cardAdapter);
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position)
+                    {
+                            String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
+
+                            final Dialog dialog = new Dialog(getActivity());
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.introvid);
+                            dialog.show();
+                            Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+                            final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
+                            videoview.setVideoPath(url);
+                            videoview.start();
+                            videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    dialog.cancel();
+                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+//                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
+//                            params.height= 500;
+//                            videoview.setLayoutParams(params);
+                    }
+                    @Override public void onLongItemClick(View view, int position)
+                    {
+
+                    }
+                })
+        );
 
         retrieveVideos(user);
 

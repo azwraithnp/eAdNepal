@@ -114,6 +114,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
                 Glide.with(mContext).load(displayUrl + album.getThumbnail()).into(holder.thumbnail);
             }
 
+
+
         }
 
     }

@@ -1,10 +1,15 @@
 package com.azwraithnp.eadnepal.main.Dashboard;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.circularreveal.CircularRevealLinearLayout;
@@ -18,7 +23,14 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,6 +45,8 @@ import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
 import com.azwraithnp.eadnepal.main.helper_classes.GridSpacingItemDecoration;
+import com.azwraithnp.eadnepal.main.helper_classes.RecyclerItemClickListener;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -40,6 +54,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +89,9 @@ public class HomeFragment extends Fragment {
     private ArrayList<String> imageList;
 
     private String userJSON;
+
+    private ProgressBar progressBar;
+    private CountDownTimer countDownTimer;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -118,13 +136,66 @@ public class HomeFragment extends Fragment {
         indicator = (CirclePageIndicator)
                 v.findViewById(R.id.indicator);
 
-
         photoRecyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
         photoRecyclerView.setLayoutManager(mLayoutManager);
 //        recyclerView.addItemDecoration(new GridSpacingItemDecoration(albumList.size(), dpToPx(10), true));
         photoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         photoRecyclerView.setAdapter(photoAdapter);
+        photoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), photoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+            @Override public void onItemClick(View view, int position)
+            {
+                if(position == photoAdapter.getItemCount() - 1)
+                {
+                    PictureFragment pictureFragment = new PictureFragment();
+                    pictureFragment.setArguments(getArguments());
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).commit();
+                }
+                else
+                {
+
+                    String url = "http://eadnepal.com/client/pages/target/uploads/" + photoList.get(position).getThumbnail();
+
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.intropicture);
+                    dialog.show();
+
+                    ImageView img = dialog.findViewById(R.id.adPic);
+                    Glide.with(getActivity()).load(url).into(img);
+
+                    progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
+                    progressBar.setProgress(0);
+                    countDownTimer=new CountDownTimer(15000,1000) {
+
+                        int i=0;
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                            i++;
+                            progressBar.setProgress((int)i*100/(15000/1000));
+
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            //Do what you want
+                            i++;
+                            progressBar.setProgress(100);
+                            dialog.cancel();
+                            Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                        }
+                    };
+                    countDownTimer.start();
+
+                }
+            }
+            @Override public void onLongItemClick(View view, int position)
+            {
+
+            }
+            })
+        );
 
         videoRecyclerView = (RecyclerView) v.findViewById(R.id.video_recycler_view);
         RecyclerView.LayoutManager nLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
@@ -132,6 +203,46 @@ public class HomeFragment extends Fragment {
 //        recyclerView.addItemDecoration(new GridSpacingItemDecoration(albumList.size(), dpToPx(10), true));
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         videoRecyclerView.setAdapter(videoAdapter);
+        videoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), videoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position)
+                    {
+                        if(position == videoAdapter.getItemCount() - 1)
+                        {
+                            VideoFragment videoFragment = new VideoFragment();
+                            videoFragment.setArguments(getArguments());
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).commit();
+                        }
+                        else
+                        {
+
+                            String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
+
+                            final Dialog dialog = new Dialog(getActivity());
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.introvid);
+                            dialog.show();
+                            Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+                            final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
+                            videoview.setVideoPath(url);
+                            videoview.start();
+                            videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    dialog.cancel();
+                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+//                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
+//                            params.height= 500;
+//                            videoview.setLayoutParams(params);
+                        }
+                    }
+                    @Override public void onLongItemClick(View view, int position)
+                    {
+
+                    }
+                })
+        );
 
         audioRecyclerView = (RecyclerView) v.findViewById(R.id.audio_recycler_view);
         RecyclerView.LayoutManager oLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
@@ -139,6 +250,52 @@ public class HomeFragment extends Fragment {
 //        recyclerView.addItemDecoration(new GridSpacingItemDecoration(albumList.size(), dpToPx(10), true));
         audioRecyclerView.setItemAnimator(new DefaultItemAnimator());
         audioRecyclerView.setAdapter(audioAdapter);
+        audioRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), audioRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position)
+                    {
+                        if(position == audioAdapter.getItemCount() - 1) {
+                            AudioFragment audioFragment = new AudioFragment();
+                            audioFragment.setArguments(getArguments());
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).commit();
+                        }
+                        else
+                        {
+                            final Dialog dialog = new Dialog(getActivity());
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.intromusic);
+                            dialog.show();
+
+                            Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+
+                            String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
+                            final MediaPlayer mediaPlayer = new MediaPlayer();
+                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            try
+                            {
+                                mediaPlayer.setDataSource(url);
+                                mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                            }
+                            catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            mediaPlayer.start();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    mediaPlayer.release();
+                                    dialog.cancel();
+                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                    @Override public void onLongItemClick(View view, int position)
+                    {
+
+                    }
+                })
+        );
 
 
     }

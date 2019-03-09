@@ -1,7 +1,10 @@
 package com.azwraithnp.eadnepal.main.Dashboard;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +16,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -25,25 +30,20 @@ import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
 import com.azwraithnp.eadnepal.main.helper_classes.GridSpacingItemDecoration;
+import com.azwraithnp.eadnepal.main.helper_classes.RecyclerItemClickListener;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AudioFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AudioFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class AudioFragment extends Fragment {
 
 
@@ -84,6 +84,52 @@ public class AudioFragment extends Fragment {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(cardAdapter);
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position)
+                    {
+                        if(position == cardAdapter.getItemCount() - 1) {
+                            AudioFragment audioFragment = new AudioFragment();
+                            audioFragment.setArguments(getArguments());
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).commit();
+                        }
+                        else
+                        {
+                            final Dialog dialog = new Dialog(getActivity());
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.intromusic);
+                            dialog.show();
+
+                            Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+
+                            String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
+                            final MediaPlayer mediaPlayer = new MediaPlayer();
+                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            try
+                            {
+                                mediaPlayer.setDataSource(url);
+                                mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                            }
+                            catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            mediaPlayer.start();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    dialog.cancel();
+                                    mediaPlayer.release();
+                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                    @Override public void onLongItemClick(View view, int position)
+                    {
+
+                    }
+                })
+        );
 
         retrieveAudio(user);
 

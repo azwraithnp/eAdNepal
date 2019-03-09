@@ -1,8 +1,10 @@
 package com.azwraithnp.eadnepal.main.Dashboard;
 
 
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +14,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,6 +30,8 @@ import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
 import com.azwraithnp.eadnepal.main.helper_classes.GridSpacingItemDecoration;
+import com.azwraithnp.eadnepal.main.helper_classes.RecyclerItemClickListener;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -77,6 +85,52 @@ public class PictureFragment extends Fragment {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(cardAdapter);
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position)
+                    {
+
+                        String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail();
+
+                        final Dialog dialog = new Dialog(getActivity());
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.intropicture);
+                        dialog.show();
+
+                        ImageView img = dialog.findViewById(R.id.adPic);
+                        Glide.with(getActivity()).load(url).into(img);
+
+                        final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
+                        progressBar.setProgress(0);
+                        CountDownTimer countDownTimer=new CountDownTimer(15000,1000) {
+
+                            int i=0;
+                            @Override
+                            public void onTick(long millisUntilFinished) {
+                                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                                i++;
+                                progressBar.setProgress((int)i*100/(15000/1000));
+
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                //Do what you want
+                                i++;
+                                progressBar.setProgress(100);
+                                dialog.cancel();
+                                Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                            }
+                        };
+                        countDownTimer.start();
+
+                        }
+
+                    @Override public void onLongItemClick(View view, int position)
+                    {
+
+                    }
+                })
+        );
 
         retrieveImages(user);
 
