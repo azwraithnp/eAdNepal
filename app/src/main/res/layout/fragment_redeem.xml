@@ -5,10 +5,81 @@
     android:layout_height="match_parent"
     tools:context=".main.Dashboard.RedeemFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Redeem" />
+        android:orientation="vertical">
+
+        <TextView
+            android:padding="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:text="Redeem Information"/>
+
+        <TextView
+            android:id="@+id/introText"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hello Avinash Mishra,\nYou can choose to redeem your balance by options provided below.\n\nNote: Minimum balance should be 500 before you can redeem your balance."/>
+
+        <TextView
+            android:id="@+id/balanceInfo"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Your current balance: 500"/>
+
+        <EditText
+            android:id="@+id/amountRedeem"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Amount to redeem"
+            android:layout_marginStart="20dp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:padding="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/recharge_card_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recharge card"/>
+            <RadioButton
+                android:id="@+id/gift_voucher_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gift Voucher"/>
+            <RadioButton
+                android:id="@+id/cash_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cash" />
+
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/redeem_button"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:padding="20dp"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Redeem"/>
+
+    </LinearLayout>
 
 </FrameLayout>
