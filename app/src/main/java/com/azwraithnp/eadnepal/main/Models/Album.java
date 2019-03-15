@@ -1,6 +1,7 @@
 package com.azwraithnp.eadnepal.main.Models;
 
 public class Album {
+    private String id;
     private String name;
     private int timeCount;
     private String thumbnail;
@@ -8,10 +9,19 @@ public class Album {
     public Album() {
     }
 
-    public Album(String name, int timeCount, String thumbnail) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Album(String id, String name, int timeCount, String thumbnail) {
         this.name = name;
         this.timeCount = timeCount;
         this.thumbnail = thumbnail;
+        this.id = id;
     }
 
     public String getName() {

@@ -2,7 +2,9 @@ package com.azwraithnp.eadnepal.main.Dashboard;
 
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.AudioManager;
@@ -87,11 +89,14 @@ public class HomeFragment extends Fragment {
     private List<Album> videoList;
     private List<Album> audioList;
     private ArrayList<String> imageList;
+    private ArrayList<String> idsList;
 
     private String userJSON;
 
     private ProgressBar progressBar;
     private CountDownTimer countDownTimer;
+
+    private UserModel userObj;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -117,11 +122,15 @@ public class HomeFragment extends Fragment {
         Gson gson = new Gson();
         UserModel user = gson.fromJson(userJSON, UserModel.class);
 
+        userObj = user;
+
         retrieveImages(user);
 
         retrieveAudio(user);
 
         retrieveVideos(user);
+
+        retrieveFeatured(user);
 
         populateList();
 
@@ -161,6 +170,8 @@ public class HomeFragment extends Fragment {
                     dialog.setContentView(R.layout.intropicture);
                     dialog.show();
 
+                    final String id = photoList.get(position).getId();
+
                     ImageView img = dialog.findViewById(R.id.adPic);
                     Glide.with(getActivity()).load(url).into(img);
 
@@ -174,7 +185,6 @@ public class HomeFragment extends Fragment {
                             Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
                             i++;
                             progressBar.setProgress((int)i*100/(15000/1000));
-
                         }
 
                         @Override
@@ -183,10 +193,19 @@ public class HomeFragment extends Fragment {
                             i++;
                             progressBar.setProgress(100);
                             dialog.cancel();
-                            Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                            transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
                         }
                     };
                     countDownTimer.start();
+
+                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            countDownTimer.cancel();
+                            countDownTimer = null;
+                        }
+                    });
 
                 }
             }
@@ -204,7 +223,7 @@ public class HomeFragment extends Fragment {
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         videoRecyclerView.setAdapter(videoAdapter);
         videoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), videoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position)
+                    @Override public void onItemClick(View view, final int position)
                     {
                         if(position == videoAdapter.getItemCount() - 1)
                         {
@@ -225,11 +244,22 @@ public class HomeFragment extends Fragment {
                             final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
                             videoview.setVideoPath(url);
                             videoview.start();
+
+                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+                            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    prog.dismiss();
+                                }
+                            });
+
                             videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     dialog.cancel();
-                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                    transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, userObj);
                                 }
                             });
 //                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
@@ -251,7 +281,7 @@ public class HomeFragment extends Fragment {
         audioRecyclerView.setItemAnimator(new DefaultItemAnimator());
         audioRecyclerView.setAdapter(audioAdapter);
         audioRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), audioRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position)
+                    @Override public void onItemClick(View view, final int position)
                     {
                         if(position == audioAdapter.getItemCount() - 1) {
                             AudioFragment audioFragment = new AudioFragment();
@@ -280,12 +310,31 @@ public class HomeFragment extends Fragment {
                                 e.printStackTrace();
                             }
                             mediaPlayer.start();
+
+                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    prog.dismiss();
+                                }
+                            });
+
+                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    mediaPlayer.stop();
+                                    mediaPlayer.release();
+                                }
+                            });
+
                             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     mediaPlayer.release();
                                     dialog.cancel();
-                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                    transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
                                 }
                             });
                         }
@@ -298,6 +347,132 @@ public class HomeFragment extends Fragment {
         );
 
 
+    }
+
+    public void viewPagerPicture()
+    {
+        String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(0);
+
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.intropicture);
+        dialog.show();
+
+        final String id = idsList.get(0);
+
+        ImageView img = dialog.findViewById(R.id.adPic);
+        Glide.with(getActivity()).load(url).into(img);
+
+        progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
+        progressBar.setProgress(0);
+        countDownTimer=new CountDownTimer(15000,1000) {
+
+            int i=0;
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                i++;
+                progressBar.setProgress((int)i*100/(15000/1000));
+            }
+
+            @Override
+            public void onFinish() {
+                //Do what you want
+                i++;
+                progressBar.setProgress(100);
+                dialog.cancel();
+                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
+            }
+        };
+        countDownTimer.start();
+
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                countDownTimer.cancel();
+                countDownTimer = null;
+            }
+        });
+
+    }
+
+    public void viewPagerVideo()
+    {
+        String url = "http://eadnepal.com/client/pages/target video/uploads/" + imageList.get(2);
+
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.introvid);
+        dialog.show();
+        Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+        final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
+        videoview.setVideoPath(url);
+        videoview.start();
+
+        final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                prog.dismiss();
+            }
+        });
+
+        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                dialog.cancel();
+                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                transferBalance(idsList.get(2), AppConfig.URL_TRANSFER_VIDEO, userObj);
+            }
+        });
+//                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
+//                            params.height= 500;
+//                            videoview.setLayoutParams(params);
+    }
+
+    public void viewPagerAudio()
+    {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.intromusic);
+        dialog.show();
+
+        Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+
+        String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + imageList.get(1); // your URL here
+        final MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try
+        {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        mediaPlayer.start();
+
+        final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                prog.dismiss();
+            }
+        });
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mediaPlayer.release();
+                dialog.cancel();
+                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                transferBalance(idsList.get(1), AppConfig.URL_TRANSFER_AUDIO, userObj);
+            }
+        });
     }
 
     public void retrieveImages(final UserModel user)
@@ -325,14 +500,14 @@ public class HomeFragment extends Fragment {
                         int timeCount = 15;
                         String image = dataObj.getString("doc_image");
 
-                        Album album = new Album(name, timeCount, image);
+                        String id = dataObj.getString("id");
+
+                        Album album = new Album(id, name, timeCount, image);
                         photoList.add(album);
 
                     }
 
-                    init();
-
-                    photoList.add(new Album("View more", 0, "abc"));
+                    photoList.add(new Album("999","View more", 0, "abc"));
 
                     photoAdapter.notifyDataSetChanged();
 
@@ -363,6 +538,7 @@ public class HomeFragment extends Fragment {
                 params.put("location", user.getLocation());
                 params.put("age", user.getAge());
                 params.put("sex", user.getSex());
+                params.put("uid", user.getId());
                 return params;
             }
 
@@ -373,6 +549,8 @@ public class HomeFragment extends Fragment {
 
 
     }
+
+
 
     public void retrieveVideos(final UserModel user)
     {
@@ -399,11 +577,13 @@ public class HomeFragment extends Fragment {
                         int timeCount = 15;
                         String video = dataObj.getString("video");
 
-                        Album album = new Album(name, timeCount, video);
+                        String id = dataObj.getString("id");
+
+                        Album album = new Album(id, name, timeCount, video);
                         videoList.add(album);
                     }
 
-                    videoList.add(new Album("View more", 0, "abc"));
+                    videoList.add(new Album("9999", "View more", 0, "abc"));
 
                     videoAdapter.notifyDataSetChanged();
 
@@ -434,6 +614,7 @@ public class HomeFragment extends Fragment {
                 params.put("location", user.getLocation());
                 params.put("age", user.getAge());
                 params.put("sex", user.getSex());
+                params.put("uid", user.getId());
                 return params;
             }
 
@@ -470,11 +651,13 @@ public class HomeFragment extends Fragment {
                         int timeCount = 15;
                         String audio = dataObj.getString("audio");
 
-                        Album album = new Album(name, timeCount, audio);
+                        String id = dataObj.getString("id");
+
+                        Album album = new Album(id, name, timeCount, audio);
                         audioList.add(album);
                     }
 
-                    audioList.add(new Album("View more", 0, "abc"));
+                    audioList.add(new Album("999", "View more", 0, "abc"));
 
                     audioAdapter.notifyDataSetChanged();
 
@@ -507,6 +690,7 @@ public class HomeFragment extends Fragment {
                 params.put("location", user.getLocation());
                 params.put("age", user.getAge());
                 params.put("sex", user.getSex());
+                params.put("uid", user.getId());
                 return params;
             }
 
@@ -517,6 +701,66 @@ public class HomeFragment extends Fragment {
 
 
     }
+
+    public void transferBalance(final String mediaId, String url, final UserModel user)
+    {
+        String tag_string_req = "req_transfer";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Transfer", "Transfer Response: " + response.toString());
+
+                try {
+
+                    JSONObject jObj = new JSONObject(response);
+
+                    String status = jObj.getString("status");
+                    String status_message = jObj.getString("status_message");
+                    String data = jObj.getString("data");
+
+                    Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Transfer", "Transfer Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("npl_token", "a");
+                params.put("npl_aid", mediaId);
+                params.put("npl_id", user.getId());
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
+
+    }
+
 
     public void populateList()
     {
@@ -534,7 +778,9 @@ public class HomeFragment extends Fragment {
 
         imageList = new ArrayList<>();
 
-        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList);
+        idsList = new ArrayList<>();
+
+        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList, this);
 
     }
 
@@ -543,14 +789,6 @@ public class HomeFragment extends Fragment {
     {
 
         Log.d("Count", "Here");
-
-        List<Album> newAlbum;
-        newAlbum = new ArrayList<>(photoList);
-
-        for(Album testAlbum: newAlbum)
-        {
-            imageList.add(testAlbum.getThumbnail());
-        }
 
         slidingImage_adapter.notifyDataSetChanged();
 
@@ -608,6 +846,107 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+
+    }
+
+    public void retrieveFeatured(final UserModel user)
+    {
+        String tag_string_req = "req_featured";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_FEATURED, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Featured", "Featured Response: " + response.toString());
+
+                try {
+
+                    JSONObject jObj = new JSONObject(response);
+
+                    JSONArray jsonArray = jObj.getJSONArray("data");
+
+                    for(int i=0;i<jsonArray.length();i++)
+                    {
+                        JSONObject dataObj = jsonArray.getJSONObject(i);
+
+                        int timeCount = 15;
+
+                        switch (i)
+                        {
+                            case 0:
+                                String id = dataObj.getString("id");
+                                String name = dataObj.getString("a_title");
+                                String thumbnail = dataObj.getString("doc_image");
+
+                                Album album = new Album(id, name, timeCount, thumbnail);
+                                idsList.add(album.getId());
+                                imageList.add(album.getThumbnail());
+                                break;
+
+                            case 1:
+                                String id1 = dataObj.getString("id");
+                                String name1 = dataObj.getString("a_title");
+                                String thumbnail1 = dataObj.getString("audio");
+
+                                Album album1 = new Album(id1, name1, timeCount, thumbnail1);
+                                idsList.add(album1.getId());
+                                imageList.add(album1.getThumbnail());
+
+                                break;
+
+                            case 2:
+                                String id2 = dataObj.getString("id");
+                                String name2 = dataObj.getString("a_title");
+                                String thumbnail2 = dataObj.getString("video");
+
+                                Album album2 = new Album(id2, name2, timeCount, thumbnail2);
+                                idsList.add(album2.getId());
+                                imageList.add(album2.getThumbnail());
+                                break;
+                        }
+
+                    }
+
+                    init();
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Featured", "Featured Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("ead_token", AppConfig.EAD_TOKEN);
+                params.put("location", user.getLocation());
+                params.put("age", user.getAge());
+                params.put("sex", user.getSex());
+                params.put("uid", user.getId());
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
 
 
     }

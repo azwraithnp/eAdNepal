@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +44,9 @@ public class ProfileFragment extends Fragment {
     ProgressDialog progressDialog;
     TextView name, balance, age, gender, emailV, phone, location, date, college, field, education, company, post;
 
+    ImageView historyButton;
+
+    UserModel userObj;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -59,6 +65,18 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         setupViews(v);
+
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HistoryFragment historyFragment = new HistoryFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("User", new Gson().toJson(userObj));
+                historyFragment.setArguments(bundle);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyFragment).commit();
+            }
+        });
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
 
@@ -82,6 +100,7 @@ public class ProfileFragment extends Fragment {
         education = v.findViewById(R.id.educationValue);
         company = v.findViewById(R.id.companyValue);
         post = v.findViewById(R.id.postValue);
+        historyButton = v.findViewById(R.id.historyButton);
     }
 
     private void checkLogin(final String email, final String password) {
@@ -124,6 +143,8 @@ public class ProfileFragment extends Fragment {
                             getString(dataObj, "sex"));
 
                     Log.d("User", user.toString());
+
+                    userObj = user;
 
                     name.setText(user.getF_name() + " " + user.getL_name());
                     balance.setText(user.getBalance());

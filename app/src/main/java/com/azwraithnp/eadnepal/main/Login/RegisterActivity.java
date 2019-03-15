@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                     String status = jObj.getString("status");
                     String status_message = jObj.getString("status_message");
 
-                    Toast.makeText(RegisterActivity.this, status + status_message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, status_message, Toast.LENGTH_SHORT).show();
 
 
                 } catch (JSONException e) {
@@ -193,6 +193,11 @@ public class RegisterActivity extends AppCompatActivity {
         colgName = findViewById(R.id.input_colg);
         companyName = findViewById(R.id.input_company);
         postTitle = findViewById(R.id.input_post);
+
+        gender = findViewById(R.id.genderSpinner);
+        location = findViewById(R.id.locationSpinner);
+        education = findViewById(R.id.eduSpinner);
+        fieldofstudy = findViewById(R.id.eduGenSpinner);
 
         progressDialog = new ProgressDialog(RegisterActivity.this,
                 R.style.AppTheme_Dark_Dialog);

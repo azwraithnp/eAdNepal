@@ -26,6 +26,17 @@
         android:layout_toEndOf="@id/autologinText"
         android:layout_alignParentEnd="true" />
 
+    <TextView
+        android:layout_below="@id/autologinText"
+        android:id="@+id/passwordChangeText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="20sp"
+        android:gravity="center_vertical"
+        android:text="Change Password"/>
+
+
+
 </RelativeLayout>
 
 </FrameLayout>

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class RedeemFragment extends Fragment {
 
     Button redeemButton;
 
-    String username, currentBalanceValue, redeemOption, redeemAmount;
+    String username, currentBalanceValue, redeemOption, redeemAmount, userId;
 
     ProgressDialog progressDialog;
 
@@ -110,6 +111,8 @@ public class RedeemFragment extends Fragment {
                     else
                     {
                         Toast.makeText(getActivity(), "Pass", Toast.LENGTH_SHORT).show();
+                        String userid = userId;
+                        callRedeem(userid);
                     }
                 }
             }
@@ -174,6 +177,7 @@ public class RedeemFragment extends Fragment {
 
                     username = user.getF_name() + " " + user.getL_name();
                     currentBalanceValue = user.getBalance();
+                    userId = user.getId();
 
                     introText.setText("Hello " + username + ",\nYou can choose to redeem your balance by options provided below.\n\nNote: Minimum balance should be 500 before you can redeem your balance.");
                     currentBalance.setText("Your current balance: " + currentBalanceValue);
@@ -228,6 +232,65 @@ public class RedeemFragment extends Fragment {
     public String getString(JSONObject jsonObject, String stringToken) throws JSONException {
         return jsonObject.getString(stringToken);
     }
+
+    public void callRedeem(final String userId)
+    {
+        String tag_string_req = "req_redeem";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_REDEEM, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Redeem", "Redeem Response: " + response.toString());
+
+                try {
+
+                    JSONObject jObj = new JSONObject(response);
+
+                    String data = jObj.getString("data");
+
+                    Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Redeem", "Redeem Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("ead_token", AppConfig.EAD_TOKEN);
+                params.put("uid", userId);
+                params.put("amount", redeemAmount);
+                params.put("radio", redeemOption);
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
+
+    }
+
 
 
 }

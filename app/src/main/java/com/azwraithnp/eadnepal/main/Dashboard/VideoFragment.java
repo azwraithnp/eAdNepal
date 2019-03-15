@@ -2,9 +2,12 @@ package com.azwraithnp.eadnepal.main.Dashboard;
 
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -41,17 +45,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link VideoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class VideoFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private List<Album> videoList;
 
     private CardAdapter cardAdapter;
+
+    private ProgressBar progressBar;
 
     public VideoFragment() {
         // Required empty public constructor
@@ -73,7 +74,7 @@ public class VideoFragment extends Fragment {
 
         videoList = new ArrayList<>();
 
-        UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
+        final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
         View v = inflater.inflate(R.layout.fragment_video, container, false);
 
@@ -81,13 +82,25 @@ public class VideoFragment extends Fragment {
 
         cardAdapter = new CardAdapter(getActivity(), videoList, "videoall");
 
+        progressBar = v.findViewById(R.id.loadingProgressBar);
+
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(cardAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    retrieveVideos(user, videoList.get(videoList.size()-1).getId());
+                }
+            }
+        });
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position)
+                    @Override public void onItemClick(View view, final int position)
                     {
                             String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
 
@@ -99,13 +112,26 @@ public class VideoFragment extends Fragment {
                             final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
                             videoview.setVideoPath(url);
                             videoview.start();
+
+                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+                            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                prog.dismiss();
+                            }
+                            });
+
                             videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     dialog.cancel();
-                                    Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                    transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, user);
                                 }
                             });
+
+
 //                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
 //                            params.height= 500;
 //                            videoview.setLayoutParams(params);
@@ -117,20 +143,82 @@ public class VideoFragment extends Fragment {
                 })
         );
 
-        retrieveVideos(user);
+        retrieveVideos(user, "0");
 
         return v;
     }
 
-    public void retrieveVideos(final UserModel user)
+    public void transferBalance(final String mediaId, String url, final UserModel user)
     {
-        String tag_string_req = "req_videos";
+        String tag_string_req = "req_transfer";
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.URL_VIDEOS, new Response.Listener<String>() {
+                url, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
+                Log.d("Transfer", "Transfer Response: " + response.toString());
+
+                try {
+
+                    JSONObject jObj = new JSONObject(response);
+
+                    String status = jObj.getString("status");
+                    String status_message = jObj.getString("status_message");
+                    String data = jObj.getString("data");
+
+                    Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Transfer", "Transfer Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("npl_token", "a");
+                params.put("npl_aid", mediaId);
+                params.put("npl_id", user.getId());
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
+
+    }
+
+    public void retrieveVideos(final UserModel user, final String aid)
+    {
+        progressBar.setVisibility(View.VISIBLE);
+
+        String tag_string_req = "req_videos";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_ALL_VIDEO, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                progressBar.setVisibility(View.INVISIBLE);
                 Log.d("Video", "Video Response: " + response.toString());
 
                 try {
@@ -147,7 +235,9 @@ public class VideoFragment extends Fragment {
                         int timeCount = 15;
                         String video = dataObj.getString("video");
 
-                        Album album = new Album(name, timeCount, video);
+                        String id = dataObj.getString("id");
+
+                        Album album = new Album(id, name, timeCount, video);
                         videoList.add(album);
                     }
 
@@ -180,6 +270,8 @@ public class VideoFragment extends Fragment {
                 params.put("location", user.getLocation());
                 params.put("age", user.getAge());
                 params.put("sex", user.getSex());
+                params.put("uid", user.getId());
+                params.put("aid", aid);
                 return params;
             }
 

@@ -144,6 +144,7 @@ public class Dashboard extends AppCompatActivity {
 
                             case R.id.nav_settings:
                                 SettingsFragment settingsFragment = new SettingsFragment();
+                                settingsFragment.setArguments(bundle);
                                 getSupportFragmentManager().beginTransaction().replace(R.id.frame, settingsFragment).commit();
                                 break;
 

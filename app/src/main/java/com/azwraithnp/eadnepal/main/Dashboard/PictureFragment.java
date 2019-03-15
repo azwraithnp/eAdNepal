@@ -2,9 +2,11 @@ package com.azwraithnp.eadnepal.main.Dashboard;
 
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,6 +52,9 @@ public class PictureFragment extends Fragment {
 
     private CardAdapter cardAdapter;
 
+    private ProgressBar progress;
+
+    private CountDownTimer countDownTimer;
 
     public PictureFragment() {
         // Required empty public constructor
@@ -72,11 +77,13 @@ public class PictureFragment extends Fragment {
 
         imageList = new ArrayList<>();
 
-        UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
+        final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
         View v = inflater.inflate(R.layout.fragment_picture, container, false);
 
         recyclerView = v.findViewById(R.id.all_photo_recycler_view);
+
+        progress = v.findViewById(R.id.loadingProgressBar);
 
         cardAdapter = new CardAdapter(getActivity(), imageList, "photoall");
 
@@ -85,8 +92,18 @@ public class PictureFragment extends Fragment {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(cardAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    retrieveImages(user, imageList.get(imageList.size()-1).getId());
+                }
+            }
+        });
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position)
+                    @Override public void onItemClick(View view, final int position)
                     {
 
                         String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail();
@@ -101,7 +118,7 @@ public class PictureFragment extends Fragment {
 
                         final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
                         progressBar.setProgress(0);
-                        CountDownTimer countDownTimer=new CountDownTimer(15000,1000) {
+                        countDownTimer=new CountDownTimer(15000,1000) {
 
                             int i=0;
                             @Override
@@ -109,7 +126,6 @@ public class PictureFragment extends Fragment {
                                 Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
                                 i++;
                                 progressBar.setProgress((int)i*100/(15000/1000));
-
                             }
 
                             @Override
@@ -118,10 +134,19 @@ public class PictureFragment extends Fragment {
                                 i++;
                                 progressBar.setProgress(100);
                                 dialog.cancel();
-                                Toast.makeText(getActivity(), "Balance transferred!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                transferBalance(imageList.get(position).getId(), AppConfig.URL_TRANSFER_PICTURE, user);
                             }
                         };
                         countDownTimer.start();
+
+                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                countDownTimer.cancel();
+                                countDownTimer = null;
+                            }
+                        });
 
                         }
 
@@ -132,7 +157,7 @@ public class PictureFragment extends Fragment {
                 })
         );
 
-        retrieveImages(user);
+        retrieveImages(user, "0");
 
         return v;
     }
@@ -142,18 +167,80 @@ public class PictureFragment extends Fragment {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
-    public void retrieveImages(final UserModel user)
+    public void transferBalance(final String mediaId, String url, final UserModel user)
     {
+        String tag_string_req = "req_transfer";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Transfer", "Transfer Response: " + response.toString());
+
+                try {
+
+                    JSONObject jObj = new JSONObject(response);
+
+                    String status = jObj.getString("status");
+                    String status_message = jObj.getString("status_message");
+                    String data = jObj.getString("data");
+
+                    Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Transfer", "Transfer Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("npl_token", "a");
+                params.put("npl_aid", mediaId);
+                params.put("npl_id", user.getId());
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
+
+    }
+
+    public void retrieveImages(final UserModel user, final String id)
+    {
+        progress.setVisibility(View.VISIBLE);
         String tag_string_req = "req_images";
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.URL_IMAGES, new Response.Listener<String>() {
+                AppConfig.URL_ALL_IMAGES, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d("Image", "Image Response: " + response.toString());
 
                 try {
+
+                    progress.setVisibility(View.INVISIBLE);
 
                     JSONObject jObj = new JSONObject(response);
 
@@ -167,7 +254,9 @@ public class PictureFragment extends Fragment {
                         int timeCount = 15;
                         String image = dataObj.getString("doc_image");
 
-                        Album album = new Album(name, timeCount, image);
+                        String id = dataObj.getString("id");
+
+                        Album album = new Album(id, name, timeCount, image);
                         imageList.add(album);
 
                     }
@@ -201,6 +290,8 @@ public class PictureFragment extends Fragment {
                 params.put("location", user.getLocation());
                 params.put("age", user.getAge());
                 params.put("sex", user.getSex());
+                params.put("uid", user.getId());
+                params.put("aid", id);
                 return params;
             }
 
