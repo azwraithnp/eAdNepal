@@ -90,5 +90,18 @@
             android:padding="20dp"
             android:text="Sign Up" />
 
+        <TextView
+            android:id="@+id/forgotPassword"
+            android:clickable="true"
+            android:focusable="true"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_reg"
+            android:text="Forgot your password?"/>
+
     </RelativeLayout>
 </RelativeLayout>

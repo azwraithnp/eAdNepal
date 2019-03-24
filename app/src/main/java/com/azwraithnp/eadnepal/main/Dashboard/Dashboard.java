@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -45,6 +46,7 @@ public class Dashboard extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ImageView homeButton;
+    private TextView toolbarText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class Dashboard extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.drawer_layout);
         homeButton = findViewById(R.id.home_button);
-
+        toolbarText = findViewById(R.id.homeText);
 
 
 //        Gson gson = new Gson();
@@ -77,6 +79,7 @@ public class Dashboard extends AppCompatActivity {
                 HomeFragment homeFragment = new HomeFragment();
                 homeFragment.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame, homeFragment).commit();
+                toolbarText.setText("e-Ads Nepal");
             }
         });
 
@@ -104,48 +107,57 @@ public class Dashboard extends AppCompatActivity {
 
                                 ProfileFragment profileFragment = new ProfileFragment();
 
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, profileFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, profileFragment).addToBackStack("profile").commit();
 
-                                toolbar.setTitle("Profile");
+                                toolbarText.setText("Profile");
+                                break;
+
+                            case R.id.nav_home:
+
+                                HomeFragment homeFragment1 = new HomeFragment();
+                                homeFragment1.setArguments(bundle);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, homeFragment1).commit();
                                 break;
 
                             case R.id.nav_audio:
 
                                 AudioFragment audioFragment = new AudioFragment();
                                 audioFragment.setArguments(bundle);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).addToBackStack("audio").commit();
 
-                                toolbar.setTitle("Audio");
+                                toolbarText.setText("Audio");
                                 break;
 
                             case R.id.nav_video:
                                 VideoFragment videoFragment = new VideoFragment();
                                 videoFragment.setArguments(bundle);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).addToBackStack("video").commit();
 
-                                toolbar.setTitle("Video");
+                                toolbarText.setText("Video");
                                 break;
 
                             case R.id.nav_picture:
 
                                 PictureFragment pictureFragment = new PictureFragment();
                                 pictureFragment.setArguments(bundle);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).addToBackStack("picture").commit();
 
-                                toolbar.setTitle("Picture");
+                                toolbarText.setText("Picture");
                                 break;
 
                             case R.id.nav_redeem:
                                 RedeemFragment redeemFragment = new RedeemFragment();
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, redeemFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, redeemFragment).addToBackStack("redeem").commit();
 
-                                toolbar.setTitle("Redeem");
+                                toolbarText.setText("Redeem");
                                 break;
 
                             case R.id.nav_settings:
                                 SettingsFragment settingsFragment = new SettingsFragment();
                                 settingsFragment.setArguments(bundle);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, settingsFragment).commit();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, settingsFragment).addToBackStack("settings").commit();
+
+                                toolbarText.setText("Settings");
                                 break;
 
                             case R.id.nav_logout:
@@ -166,6 +178,12 @@ public class Dashboard extends AppCompatActivity {
                     }
                 });
 
+    }
+
+
+    public void changeText(String text)
+    {
+        toolbarText.setText(text);
     }
 
     @Override

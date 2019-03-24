@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -77,6 +78,8 @@ public class PictureFragment extends Fragment {
 
         imageList = new ArrayList<>();
 
+        ((Dashboard)getActivity()).changeText("All Picture");
+
         final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
         View v = inflater.inflate(R.layout.fragment_picture, container, false);
@@ -113,8 +116,10 @@ public class PictureFragment extends Fragment {
                         dialog.setContentView(R.layout.intropicture);
                         dialog.show();
 
+                        TextView title = dialog.findViewById(R.id.title);
                         ImageView img = dialog.findViewById(R.id.adPic);
                         Glide.with(getActivity()).load(url).into(img);
+                        title.setText(imageList.get(position).getName());
 
                         final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
                         progressBar.setProgress(0);

@@ -54,6 +54,8 @@ public class HistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        ((Dashboard)getActivity()).changeText("History");
+
         final UserModel user = new Gson().fromJson(getArguments().getString("User"), UserModel.class);
 
         View v = inflater.inflate(R.layout.fragment_history, container, false);

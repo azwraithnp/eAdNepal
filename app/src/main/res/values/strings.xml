@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">eAdNepal</string>
+    <string name="app_name">E-Ads Nepal</string>
 
     <string-array name="gender">
         <item> Male </item>

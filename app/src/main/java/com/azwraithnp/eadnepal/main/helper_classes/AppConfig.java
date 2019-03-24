@@ -37,4 +37,6 @@ public class AppConfig {
 
     public static String URL_FEATURED = "http://eadnepal.com/apis/latest_ads/";
 
+    public static String URL_FORGOT_PASSWORD = "http://eadnepal.com/apis/renew_password/";
+
 }

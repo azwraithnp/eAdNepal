@@ -64,6 +64,8 @@ public class RedeemFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_redeem, container, false);
 
+        ((Dashboard)getActivity()).changeText("Redeem");
+
         setupViews(v);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);

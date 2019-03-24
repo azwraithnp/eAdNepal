@@ -60,6 +60,8 @@ public class SettingsFragment extends Fragment {
 
         final SharedPreferences mPrefs = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
 
+        ((Dashboard)getActivity()).changeText("Settings");
+
         assert getArguments() != null;
 
         final UserModel user = new Gson().fromJson(getArguments().getString("User"), UserModel.class);

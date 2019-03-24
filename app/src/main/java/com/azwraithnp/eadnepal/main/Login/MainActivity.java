@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Button loginButton, registerButton;
     EditText email, password;
     ProgressDialog progressDialog;
+
+    TextView forgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Please wait..", Toast.LENGTH_SHORT).show();
+                forgotPasswordAPI(email.getText().toString());
+            }
+        });
+
     }
 
     public void setupViews()
@@ -75,11 +86,67 @@ public class MainActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.btn_reg);
         email = findViewById(R.id.input_email);
         password = findViewById(R.id.input_password);
+        forgotPassword = findViewById(R.id.forgotPassword);
 
         progressDialog = new ProgressDialog(MainActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setCancelable(false);
     }
+
+    private void forgotPasswordAPI(final String email) {
+        // Tag used to cancel the request
+        String tag_string_req = "req_forgot";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_FORGOT_PASSWORD, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Forgot", "Forgot Response: " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+
+                    String status_message = jObj.getString("status_message");
+
+                    Toast.makeText(MainActivity.this, status_message, Toast.LENGTH_SHORT).show();
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                Log.e("Forgot", "Forgot Error: " + error.getMessage());
+                hideDialog();
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("npl_token", AppConfig.EAD_TOKEN);
+                params.put("email", email);
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
 
     private void checkLogin(final String email, final String password) {
         // Tag used to cancel the request

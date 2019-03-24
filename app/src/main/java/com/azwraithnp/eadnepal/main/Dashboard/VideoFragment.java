@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -76,6 +77,8 @@ public class VideoFragment extends Fragment {
 
         final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
+        ((Dashboard)getActivity()).changeText("All Video");
+
         View v = inflater.inflate(R.layout.fragment_video, container, false);
 
         recyclerView = v.findViewById(R.id.all_video_recycler_view);
@@ -109,7 +112,9 @@ public class VideoFragment extends Fragment {
                             dialog.setContentView(R.layout.introvid);
                             dialog.show();
                             Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+                            TextView title = dialog.findViewById(R.id.title);
                             final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
+                            title.setText(videoList.get(position).getName());
                             videoview.setVideoPath(url);
                             videoview.start();
 

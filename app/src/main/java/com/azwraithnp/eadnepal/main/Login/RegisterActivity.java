@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -38,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity {
     ScrollView scrollView;
     CustomNachoTextView nachoTextView;
     Button createAccount;
+    CheckBox termsBox;
 
     EditText firstName, lastName, email, phone, age, colgName, companyName, postTitle;
     Spinner gender, location, education, fieldofstudy;
@@ -66,6 +68,10 @@ public class RegisterActivity extends AppCompatActivity {
                     if(nachoTextView.getChipValues().size() == 0)
                     {
                         nachoTextView.setError("Please enter atleast one interest!");
+                    }
+                    else if(!termsBox.isChecked())
+                    {
+                        termsBox.setError("Please read and accept the terms and conditions before proceeding");
                     }
                     else
                     {
@@ -198,6 +204,8 @@ public class RegisterActivity extends AppCompatActivity {
         location = findViewById(R.id.locationSpinner);
         education = findViewById(R.id.eduSpinner);
         fieldofstudy = findViewById(R.id.eduGenSpinner);
+
+        termsBox = findViewById(R.id.link_terms);
 
         progressDialog = new ProgressDialog(RegisterActivity.this,
                 R.style.AppTheme_Dark_Dialog);

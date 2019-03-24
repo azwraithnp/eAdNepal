@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -95,6 +96,7 @@ public class HomeFragment extends Fragment {
 
     private ProgressBar progressBar;
     private CountDownTimer countDownTimer;
+    private Timer viewPagerTimer;
 
     private UserModel userObj;
 
@@ -116,6 +118,8 @@ public class HomeFragment extends Fragment {
 
         assert getArguments() != null;
         this.userJSON = getArguments().getString("User");
+
+        ((Dashboard)getActivity()).changeText(getResources().getString(R.string.app_name));
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -158,7 +162,8 @@ public class HomeFragment extends Fragment {
                 {
                     PictureFragment pictureFragment = new PictureFragment();
                     pictureFragment.setArguments(getArguments());
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).addToBackStack("allpic").commit();
+                    ((Dashboard)getActivity()).changeText("All Picture");
                 }
                 else
                 {
@@ -174,6 +179,9 @@ public class HomeFragment extends Fragment {
 
                     ImageView img = dialog.findViewById(R.id.adPic);
                     Glide.with(getActivity()).load(url).into(img);
+
+                    TextView titleg = dialog.findViewById(R.id.title);
+                    titleg.setText(photoList.get(position).getName());
 
                     progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
                     progressBar.setProgress(0);
@@ -229,7 +237,8 @@ public class HomeFragment extends Fragment {
                         {
                             VideoFragment videoFragment = new VideoFragment();
                             videoFragment.setArguments(getArguments());
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).addToBackStack("allvideo").commit();
+                            ((Dashboard)getActivity()).changeText("All Video");
                         }
                         else
                         {
@@ -241,6 +250,10 @@ public class HomeFragment extends Fragment {
                             dialog.setContentView(R.layout.introvid);
                             dialog.show();
                             Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+
+                            TextView titleg = dialog.findViewById(R.id.title);
+                            titleg.setText(videoList.get(position).getName());
+
                             final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
                             videoview.setVideoPath(url);
                             videoview.start();
@@ -262,9 +275,6 @@ public class HomeFragment extends Fragment {
                                     transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, userObj);
                                 }
                             });
-//                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
-//                            params.height= 500;
-//                            videoview.setLayoutParams(params);
                         }
                     }
                     @Override public void onLongItemClick(View view, int position)
@@ -286,7 +296,8 @@ public class HomeFragment extends Fragment {
                         if(position == audioAdapter.getItemCount() - 1) {
                             AudioFragment audioFragment = new AudioFragment();
                             audioFragment.setArguments(getArguments());
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).addToBackStack("allaudio").commit();
+                            ((Dashboard)getActivity()).changeText("All Audio");
                         }
                         else
                         {
@@ -294,6 +305,9 @@ public class HomeFragment extends Fragment {
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             dialog.setContentView(R.layout.intromusic);
                             dialog.show();
+
+                            TextView titleg = dialog.findViewById(R.id.title);
+                            titleg.setText(audioList.get(position).getName());
 
                             Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
 
@@ -702,6 +716,27 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(viewPagerTimer != null)
+            viewPagerTimer.cancel();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(viewPagerTimer != null)
+            viewPagerTimer.cancel();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(viewPagerTimer != null)
+            viewPagerTimer.cancel();
+    }
+
     public void transferBalance(final String mediaId, String url, final UserModel user)
     {
         String tag_string_req = "req_transfer";
@@ -818,8 +853,8 @@ public class HomeFragment extends Fragment {
                 mPager.setCurrentItem(currentPage++, true);
             }
         };
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
+        viewPagerTimer = new Timer();
+        viewPagerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 handler.post(Update);

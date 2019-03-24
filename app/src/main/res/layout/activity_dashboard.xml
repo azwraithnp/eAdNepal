@@ -19,20 +19,33 @@
         android:background="@color/colorPrimaryDark"
         app:titleTextColor="@color/white"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <TextView
+                android:id="@+id/homeText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="e-Ads Nepal"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
         <ImageView
             android:id="@+id/home_button"
             android:clickable="true"
             android:focusable="true"
-            android:layout_gravity="end"
-            android:padding="10dp"
+            android:layout_gravity="center"
+            android:layout_alignParentEnd="true"
+            android:padding="0dp"
+            android:layout_marginEnd="15dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/baseline_home_white_24"/>
-        </LinearLayout>
+            android:src="@drawable/baseline_refresh_white_24dp_1x"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp" />
+        </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
         <FrameLayout

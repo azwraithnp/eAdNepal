@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -78,6 +79,8 @@ public class AudioFragment extends Fragment {
 
         final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
+        ((Dashboard)getActivity()).changeText("All Audio");
+
         View v = inflater.inflate(R.layout.fragment_audio, container, false);
 
         progressBar = v.findViewById(R.id.loadingProgressBar);
@@ -117,6 +120,8 @@ public class AudioFragment extends Fragment {
                             dialog.show();
 
                             Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+                            TextView title = dialog.findViewById(R.id.title);
+                            title.setText(audioList.get(position).getName());
 
                             String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
                             final MediaPlayer mediaPlayer = new MediaPlayer();

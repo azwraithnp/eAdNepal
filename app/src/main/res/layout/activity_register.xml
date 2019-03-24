@@ -217,25 +217,31 @@
                 android:hint="Enter atleast one interest"/>
         </android.support.design.widget.TextInputLayout>
 
+        <CheckBox android:id="@+id/link_terms"
+            android:layout_width="fill_parent"
+            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="I agree to the terms and conditions"
+            android:textSize="16dip"/>
+
         <!-- Signup Button -->
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_signup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
             android:padding="12dp"
             android:text="Create Account"/>
 
         <TextView android:id="@+id/link_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:text="Already a member? Login"
             android:gravity="center"
             android:textSize="16dip"/>
-
-
 
     </LinearLayout>
 </ScrollView>
