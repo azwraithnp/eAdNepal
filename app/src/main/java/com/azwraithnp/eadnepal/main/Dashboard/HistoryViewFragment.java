@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import com.azwraithnp.eadnepal.R;
 import com.azwraithnp.eadnepal.main.Adapters.HistoryAdapter;
 import com.azwraithnp.eadnepal.main.Models.History;
+import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -39,6 +40,26 @@ public class HistoryViewFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_history_view, container, false);
 
         HistoryAdapter historyAdapter = new HistoryAdapter(convertGson(getArguments().getStringArrayList("history_list")));
+
+        String historyType = getArguments().getString("history_type");
+
+        assert historyType != null;
+        if(historyType.equals(AppConfig.URL_IMAGES_HISTORY))
+        {
+            if(getActivity() != null)
+                ((Dashboard)getActivity()).changeText("Picture History");
+        }
+        else if(historyType.equals(AppConfig.URL_AUDIO_HISTORY))
+        {
+            if(getActivity() != null)
+                ((Dashboard)getActivity()).changeText("Audio History");
+
+        }
+        else
+        {
+            if(getActivity() != null)
+                ((Dashboard)getActivity()).changeText("Video History");
+        }
 
         recyclerView = v.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);

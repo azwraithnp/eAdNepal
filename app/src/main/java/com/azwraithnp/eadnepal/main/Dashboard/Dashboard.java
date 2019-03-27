@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -42,11 +43,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.view.View.GONE;
+
 public class Dashboard extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ImageView homeButton;
     private TextView toolbarText;
+    public Toolbar toolbar;
+
+    private TextView nameHolder, balanceHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +72,7 @@ public class Dashboard extends AppCompatActivity {
         final Bundle bundle = new Bundle();
         bundle.putString("User", json);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionbar = getSupportActionBar();
@@ -88,6 +94,12 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.frame, homeFragment).commit();
 
         final NavigationView navigationView = findViewById(R.id.nav_view);
+
+        View hView =  navigationView.getHeaderView(0);
+        nameHolder = hView.findViewById(R.id.nameHolder);
+        balanceHolder = hView.findViewById(R.id.balanceHolder);
+
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -152,6 +164,13 @@ public class Dashboard extends AppCompatActivity {
                                 toolbarText.setText("Redeem");
                                 break;
 
+                            case R.id.placeAD:
+                                String url = "https://eadnepal.com/home/client_signup.php";
+                                Intent i = new Intent(Intent.ACTION_VIEW);
+                                i.setData(Uri.parse(url));
+                                startActivity(i);
+                                break;
+
                             case R.id.nav_settings:
                                 SettingsFragment settingsFragment = new SettingsFragment();
                                 settingsFragment.setArguments(bundle);
@@ -185,6 +204,22 @@ public class Dashboard extends AppCompatActivity {
     {
         toolbarText.setText(text);
     }
+
+    public void hideToolbar()
+    {
+        drawerLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        getSupportActionBar().hide();
+
+    }
+
+    public void showToolbar()
+    {
+        drawerLayout.setBackgroundColor(getResources().getColor(R.color.white));
+        getSupportActionBar().show();
+    }
+
+
+    public void changeNameBalance(String name, String balance){nameHolder.setText(name);    balanceHolder.setText("Balance: Rs. " + balance);}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

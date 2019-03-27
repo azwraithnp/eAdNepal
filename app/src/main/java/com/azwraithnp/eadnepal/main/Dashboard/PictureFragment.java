@@ -109,49 +109,57 @@ public class PictureFragment extends Fragment {
                     @Override public void onItemClick(View view, final int position)
                     {
 
-                        String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail();
+                        if(imageList.get(position).getId().equals("8888"))
+                        {
 
-                        final Dialog dialog = new Dialog(getActivity());
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(R.layout.intropicture);
-                        dialog.show();
+                        }
+                        else
+                        {
+                            String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail();
 
-                        TextView title = dialog.findViewById(R.id.title);
-                        ImageView img = dialog.findViewById(R.id.adPic);
-                        Glide.with(getActivity()).load(url).into(img);
-                        title.setText(imageList.get(position).getName());
+                            final Dialog dialog = new Dialog(getActivity());
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.intropicture);
+                            dialog.show();
 
-                        final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
-                        progressBar.setProgress(0);
-                        countDownTimer=new CountDownTimer(15000,1000) {
+                            TextView title = dialog.findViewById(R.id.title);
+                            ImageView img = dialog.findViewById(R.id.adPic);
+                            Glide.with(getActivity()).load(url).into(img);
+                            title.setText(imageList.get(position).getName());
 
-                            int i=0;
-                            @Override
-                            public void onTick(long millisUntilFinished) {
-                                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                                i++;
-                                progressBar.setProgress((int)i*100/(15000/1000));
-                            }
+                            final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
+                            progressBar.setProgress(0);
+                            countDownTimer=new CountDownTimer(15000,1000) {
 
-                            @Override
-                            public void onFinish() {
-                                //Do what you want
-                                i++;
-                                progressBar.setProgress(100);
-                                dialog.cancel();
-                                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                transferBalance(imageList.get(position).getId(), AppConfig.URL_TRANSFER_PICTURE, user);
-                            }
-                        };
-                        countDownTimer.start();
+                                int i=0;
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                                    i++;
+                                    progressBar.setProgress((int)i*100/(15000/1000));
+                                }
 
-                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                countDownTimer.cancel();
-                                countDownTimer = null;
-                            }
-                        });
+                                @Override
+                                public void onFinish() {
+                                    //Do what you want
+                                    i++;
+                                    progressBar.setProgress(100);
+                                    dialog.cancel();
+                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                    transferBalance(imageList.get(position).getId(), AppConfig.URL_TRANSFER_PICTURE, user);
+                                }
+                            };
+                            countDownTimer.start();
+
+                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    countDownTimer.cancel();
+                                    countDownTimer = null;
+                                }
+                            });
+                        }
+
 
                         }
 
@@ -256,12 +264,12 @@ public class PictureFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
+                        int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String image = dataObj.getString("doc_image");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, image);
+                        Album album = new Album(id, name, payOut, image);
                         imageList.add(album);
 
                     }
@@ -270,6 +278,8 @@ public class PictureFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
+                    imageList.add(new Album("8888", "No more ads", 0, "abc"));
+                    cardAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
 

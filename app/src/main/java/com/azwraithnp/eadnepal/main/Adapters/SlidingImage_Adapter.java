@@ -51,13 +51,20 @@ public class SlidingImage_Adapter extends PagerAdapter {
 
         int layout_file = 0;
 
-        if(position > 0)
+        if(imageList.get(position).equals("abc"))
         {
-            layout_file = R.layout.slidingimages_play_layout;
+            layout_file = R.layout.empty_slidingimage_layout;
         }
         else
         {
-            layout_file = R.layout.slidingimages_layout;
+            if(position > 0)
+            {
+                layout_file = R.layout.slidingimages_play_layout;
+            }
+            else
+            {
+                layout_file = R.layout.slidingimages_layout;
+            }
         }
 
         View imageLayout = inflater.inflate(layout_file, view, false);
@@ -65,19 +72,19 @@ public class SlidingImage_Adapter extends PagerAdapter {
         imageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(position == 0)
+                if (imageList.get(position).equals("abc"))
                 {
-                    homeFragment.viewPagerPicture();
-                }
-                else if(position == 1)
-                {
-                    homeFragment.viewPagerAudio();
-                }
-                else
-                {
-                    homeFragment.viewPagerVideo();
-                }
 
+                }
+                else {
+                    if (position == 0) {
+                        homeFragment.viewPagerPicture();
+                    } else if (position == 1) {
+                        homeFragment.viewPagerAudio();
+                    } else {
+                        homeFragment.viewPagerVideo();
+                    }
+                }
             }
         });
 
@@ -92,7 +99,7 @@ public class SlidingImage_Adapter extends PagerAdapter {
                 break;
 
             case 1:
-                Glide.with(context).load(R.drawable.baseline_audiotrack_black_24).into(imageView);
+                Glide.with(context).load(R.drawable.baseline_music_note_black_48dp).into(imageView);
                 break;
 
             case 2:

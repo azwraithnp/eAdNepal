@@ -143,10 +143,11 @@ public class HistoryFragment extends Fragment {
 
                     Bundle bundle = new Bundle();
                     bundle.putStringArrayList("history_list", historyList);
+                    bundle.putString("history_type", history_url);
 
                     HistoryViewFragment historyViewFragment = new HistoryViewFragment();
                     historyViewFragment.setArguments(bundle);
-                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyViewFragment).commit();
+                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyViewFragment).addToBackStack("historyMain").commit();
 
                 } catch (JSONException e) {
                     // JSON error

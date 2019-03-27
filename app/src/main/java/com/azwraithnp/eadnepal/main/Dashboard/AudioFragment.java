@@ -58,6 +58,8 @@ public class AudioFragment extends Fragment {
 
     private ProgressBar progressBar;
 
+    boolean stopped = false;
+
     public AudioFragment() {
         // Required empty public constructor
     }
@@ -107,13 +109,15 @@ public class AudioFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, final int position)
                     {
-                        if(position == cardAdapter.getItemCount() - 1) {
-                            AudioFragment audioFragment = new AudioFragment();
-                            audioFragment.setArguments(getArguments());
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).commit();
-                        }
-                        else
+                        stopped = false;
+
+                        if(audioList.get(position).getId().equals("8888"))
                         {
+
+                        }
+                        else {
+
+
                             final Dialog dialog = new Dialog(getActivity());
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             dialog.setContentView(R.layout.intromusic);
@@ -126,13 +130,10 @@ public class AudioFragment extends Fragment {
                             String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
                             final MediaPlayer mediaPlayer = new MediaPlayer();
                             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            try
-                            {
+                            try {
                                 mediaPlayer.setDataSource(url);
                                 mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                            }
-                            catch (IOException e)
-                            {
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
                             mediaPlayer.start();
@@ -140,8 +141,11 @@ public class AudioFragment extends Fragment {
                             dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                 @Override
                                 public void onCancel(DialogInterface dialog) {
-                                    mediaPlayer.stop();
-                                    mediaPlayer.release();
+                                    if(!stopped)
+                                    {
+                                        mediaPlayer.stop();
+                                        mediaPlayer.release();
+                                    }
                                 }
                             });
 
@@ -150,6 +154,7 @@ public class AudioFragment extends Fragment {
                                 public void onCompletion(MediaPlayer mp) {
                                     dialog.cancel();
                                     mediaPlayer.release();
+                                    stopped = true;
                                     Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
                                     transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, user);
                                 }
@@ -251,12 +256,12 @@ public class AudioFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
+                        int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String audio = dataObj.getString("audio");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, audio);
+                        Album album = new Album(id, name, payOut, audio);
                         audioList.add(album);
                     }
 
@@ -267,6 +272,8 @@ public class AudioFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
+                    audioList.add(new Album("8888", "No more ads", 0, "abc"));
+                    cardAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
 

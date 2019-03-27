@@ -1,5 +1,6 @@
 package com.azwraithnp.eadnepal.main.Login;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -73,8 +75,31 @@ public class MainActivity extends AppCompatActivity {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Please wait..", Toast.LENGTH_SHORT).show();
-                forgotPasswordAPI(email.getText().toString());
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.forgot_password_layout);
+                dialog.show();
+
+                final EditText emailEnter = dialog.findViewById(R.id.emailEnter);
+                Button submitEnter = dialog.findViewById(R.id.forgotButton);
+
+                submitEnter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!emailEnter.getText().toString().isEmpty())
+                        {
+                            Toast.makeText(MainActivity.this, "Please wait..", Toast.LENGTH_SHORT).show();
+                            forgotPasswordAPI(emailEnter.getText().toString());
+                        }
+                        else
+                        {
+                            Toast.makeText(MainActivity.this, "Please enter your email first..", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+
             }
         });
 
@@ -110,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
 
                     String status_message = jObj.getString("status_message");
 
-                    Toast.makeText(MainActivity.this, status_message, Toast.LENGTH_SHORT).show();
+                    String data = jObj.getString("data");
+
+                    Toast.makeText(MainActivity.this, data, Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     // JSON error
@@ -169,6 +196,11 @@ public class MainActivity extends AppCompatActivity {
                     String status = jObj.getString("status");
                     String status_message = jObj.getString("status_message");
 
+                    if((Integer.parseInt(status) == 200 && status_message.equals("Account not found")))
+                    {
+                        Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_SHORT).show();
+                    }
+
                     JSONArray jsonArray = jObj.getJSONArray("data");
 
                     JSONObject dataObj = jsonArray.getJSONObject(0);
@@ -208,10 +240,6 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", json));
                         finish();
                     }
-                    else if(Integer.parseInt(status) == 200 && status_message.equals("Account not found"))
-                    {
-                        Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_SHORT).show();
-                    }
 
                 } catch (JSONException e) {
                     // JSON error
@@ -226,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
                 error.printStackTrace();
 
                 Log.e("Login", "Login Error: " + error.getMessage());
+                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                 hideDialog();
 
             }

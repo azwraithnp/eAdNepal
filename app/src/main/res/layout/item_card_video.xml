@@ -51,7 +51,7 @@
                 android:paddingLeft="@dimen/album_title_padding"
                 android:paddingRight="@dimen/album_title_padding"
                 android:textSize="@dimen/time_count"
-                android:text="15 seconds"/>
+                android:text=""/>
 
             <ImageView
                 android:id="@+id/overflow"

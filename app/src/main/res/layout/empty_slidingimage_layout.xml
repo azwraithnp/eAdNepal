@@ -5,20 +5,21 @@
     android:background="@color/white"
     android:padding="0dip" >
 
-
     <ImageView
         android:id="@+id/image"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:adjustViewBounds="true"
         android:layout_gravity="center"
-        android:src="@mipmap/ic_launcher"
-        android:scaleType="centerCrop" />
+        android:src="@drawable/baseline_warning_black_48dp"
+         />
 
-
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:padding="50dp"
-        android:src="@android:drawable/ic_media_play"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:padding="25dp"
+        android:layout_marginBottom="80dp"
+        android:text="No more ads"
+        android:textSize="25sp"/>
 </FrameLayout>

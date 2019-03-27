@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="252dp"
-    android:background="@color/colorPrimary"
+    android:layout_height="300dp"
+    android:background="@drawable/gradientbackground"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:orientation="vertical"
     android:paddingTop="20dp"
     android:gravity="bottom">
 
+
     <ImageView
-        android:layout_width="match_parent"
+        android:id="@+id/logoPlaceHolder"
+        android:layout_width="100dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/app_icon"
+        />
+
+    <TextView
+        android:id="@+id/nameHolder"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/back"
-        android:scaleType="fitXY"/>
-</LinearLayout>
+        android:textColor="#fff"
+        android:layout_marginStart="16dp"
+        android:text="-- "
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_below="@id/logoPlaceHolder"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:id="@+id/balanceHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Balance: --"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:layout_below="@id/nameHolder"
+        android:layout_marginLeft="16dp" />
+
+
+</RelativeLayout>

@@ -105,6 +105,13 @@ public class VideoFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, final int position)
                     {
+                        if(videoList.get(position).getId().equals("8888"))
+                        {
+
+                        }
+                        else {
+
+
                             String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
 
                             final Dialog dialog = new Dialog(getActivity());
@@ -121,10 +128,10 @@ public class VideoFragment extends Fragment {
                             final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
 
                             videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                                prog.dismiss();
-                            }
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    prog.dismiss();
+                                }
                             });
 
                             videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -140,6 +147,7 @@ public class VideoFragment extends Fragment {
 //                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
 //                            params.height= 500;
 //                            videoview.setLayoutParams(params);
+                        }
                     }
                     @Override public void onLongItemClick(View view, int position)
                     {
@@ -151,6 +159,7 @@ public class VideoFragment extends Fragment {
         retrieveVideos(user, "0");
 
         return v;
+
     }
 
     public void transferBalance(final String mediaId, String url, final UserModel user)
@@ -237,12 +246,12 @@ public class VideoFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
+                        int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String video = dataObj.getString("video");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, video);
+                        Album album = new Album(id, name, payOut, video);
                         videoList.add(album);
                     }
 
@@ -250,7 +259,9 @@ public class VideoFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
-                    e.printStackTrace();
+                    videoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    cardAdapter.notifyDataSetChanged();
+                    Log.d("Video", "Video error:" + e.toString());
                 }
 
             }

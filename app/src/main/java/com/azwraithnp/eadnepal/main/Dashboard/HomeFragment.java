@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -52,6 +54,7 @@ import com.azwraithnp.eadnepal.main.helper_classes.RecyclerItemClickListener;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.viewpagerindicator.CirclePageIndicator;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +67,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,10 +100,21 @@ public class HomeFragment extends Fragment {
     private String userJSON;
 
     private ProgressBar progressBar;
+    private ProgressDialog progressDialog;
+
     private CountDownTimer countDownTimer;
     private Timer viewPagerTimer;
 
+    private SharedPreferences sharedPreferences;
+
     private UserModel userObj;
+
+    AVLoadingIndicatorView avLoadingIndicatorView;
+
+    ScrollView mainScrollView;
+    RelativeLayout mainLoadingView;
+
+    boolean stopped = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -123,10 +139,23 @@ public class HomeFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
+        progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setCancelable(false);
+
+
+        avLoadingIndicatorView = v.findViewById(R.id.avi);
+        mainLoadingView = v.findViewById(R.id.loadingView);
+        mainLoadingView.setVisibility(View.GONE);
+
+        mainScrollView = v.findViewById(R.id.mainScrollView);
+
         Gson gson = new Gson();
         UserModel user = gson.fromJson(userJSON, UserModel.class);
 
         userObj = user;
+
+        sharedPreferences = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
 
         retrieveImages(user);
 
@@ -139,6 +168,8 @@ public class HomeFragment extends Fragment {
         populateList();
 
         setupViews(v);
+
+        checkLogin(sharedPreferences.getString("userEmail", ""), sharedPreferences.getString("userPassword", ""));
 
         return v;
     }
@@ -158,63 +189,70 @@ public class HomeFragment extends Fragment {
         photoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), photoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
             @Override public void onItemClick(View view, int position)
             {
-                if(position == photoAdapter.getItemCount() - 1)
+                if(photoList.get(position).getId().equals("8888"))
                 {
-                    PictureFragment pictureFragment = new PictureFragment();
-                    pictureFragment.setArguments(getArguments());
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).addToBackStack("allpic").commit();
-                    ((Dashboard)getActivity()).changeText("All Picture");
+
                 }
                 else
                 {
+                    if(position == photoAdapter.getItemCount() - 1)
+                    {
+                        PictureFragment pictureFragment = new PictureFragment();
+                        pictureFragment.setArguments(getArguments());
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureFragment).addToBackStack("allpic").commit();
+                        ((Dashboard)getActivity()).changeText("All Picture");
+                    }
+                    else
+                    {
 
-                    String url = "http://eadnepal.com/client/pages/target/uploads/" + photoList.get(position).getThumbnail();
+                        String url = "http://eadnepal.com/client/pages/target/uploads/" + photoList.get(position).getThumbnail();
 
-                    final Dialog dialog = new Dialog(getActivity());
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setContentView(R.layout.intropicture);
-                    dialog.show();
+                        final Dialog dialog = new Dialog(getActivity());
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.intropicture);
+                        dialog.show();
 
-                    final String id = photoList.get(position).getId();
+                        final String id = photoList.get(position).getId();
 
-                    ImageView img = dialog.findViewById(R.id.adPic);
-                    Glide.with(getActivity()).load(url).into(img);
+                        ImageView img = dialog.findViewById(R.id.adPic);
+                        Glide.with(getActivity()).load(url).into(img);
 
-                    TextView titleg = dialog.findViewById(R.id.title);
-                    titleg.setText(photoList.get(position).getName());
+                        TextView titleg = dialog.findViewById(R.id.title);
+                        titleg.setText(photoList.get(position).getName());
 
-                    progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
-                    progressBar.setProgress(0);
-                    countDownTimer=new CountDownTimer(15000,1000) {
+                        progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
+                        progressBar.setProgress(0);
+                        countDownTimer=new CountDownTimer(15000,1000) {
 
-                        int i=0;
-                        @Override
-                        public void onTick(long millisUntilFinished) {
-                            Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                            i++;
-                            progressBar.setProgress((int)i*100/(15000/1000));
-                        }
+                            int i=0;
+                            @Override
+                            public void onTick(long millisUntilFinished) {
+                                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                                i++;
+                                progressBar.setProgress((int)i*100/(15000/1000));
+                            }
 
-                        @Override
-                        public void onFinish() {
-                            //Do what you want
-                            i++;
-                            progressBar.setProgress(100);
-                            dialog.cancel();
-                            Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                            transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
-                        }
-                    };
-                    countDownTimer.start();
+                            @Override
+                            public void onFinish() {
+                                //Do what you want
+                                i++;
+                                progressBar.setProgress(100);
+                                dialog.cancel();
+                                transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
 
-                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            countDownTimer.cancel();
-                            countDownTimer = null;
-                        }
-                    });
+                            }
+                        };
+                        countDownTimer.start();
 
+                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                countDownTimer.cancel();
+                                countDownTimer = null;
+                            }
+                        });
+
+                    }
                 }
             }
             @Override public void onLongItemClick(View view, int position)
@@ -233,48 +271,53 @@ public class HomeFragment extends Fragment {
         videoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), videoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, final int position)
                     {
-                        if(position == videoAdapter.getItemCount() - 1)
+                        if(videoList.get(position).getId().equals("8888"))
                         {
-                            VideoFragment videoFragment = new VideoFragment();
-                            videoFragment.setArguments(getArguments());
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).addToBackStack("allvideo").commit();
-                            ((Dashboard)getActivity()).changeText("All Video");
+
                         }
                         else
                         {
+                            if(position == videoAdapter.getItemCount() - 1)
+                            {
+                                VideoFragment videoFragment = new VideoFragment();
+                                videoFragment.setArguments(getArguments());
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoFragment).addToBackStack("allvideo").commit();
+                                ((Dashboard)getActivity()).changeText("All Video");
+                            }
+                            else
+                            {
+                                String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
 
-                            String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
+                                final Dialog dialog = new Dialog(getActivity());
+                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog.setContentView(R.layout.introvid);
+                                dialog.show();
 
-                            final Dialog dialog = new Dialog(getActivity());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.introvid);
-                            dialog.show();
-                            Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
+                                TextView titleg = dialog.findViewById(R.id.title);
+                                titleg.setText(videoList.get(position).getName());
 
-                            TextView titleg = dialog.findViewById(R.id.title);
-                            titleg.setText(videoList.get(position).getName());
+                                final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
+                                videoview.setVideoPath(url);
+                                videoview.start();
 
-                            final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
-                            videoview.setVideoPath(url);
-                            videoview.start();
+                                final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
 
-                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+                                videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        prog.dismiss();
+                                    }
+                                });
 
-                            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    prog.dismiss();
-                                }
-                            });
+                                videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        dialog.cancel();
+                                        transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, userObj);
 
-                            videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    dialog.cancel();
-                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                    transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, userObj);
-                                }
-                            });
+                                    }
+                                });
+                            }
                         }
                     }
                     @Override public void onLongItemClick(View view, int position)
@@ -293,65 +336,81 @@ public class HomeFragment extends Fragment {
         audioRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), audioRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, final int position)
                     {
-                        if(position == audioAdapter.getItemCount() - 1) {
-                            AudioFragment audioFragment = new AudioFragment();
-                            audioFragment.setArguments(getArguments());
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).addToBackStack("allaudio").commit();
-                            ((Dashboard)getActivity()).changeText("All Audio");
-                        }
-                        else
+
+                        stopped = false;
+
+                        Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                        if(audioList.get(position).getId().equals("8888"))
                         {
-                            final Dialog dialog = new Dialog(getActivity());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.intromusic);
-                            dialog.show();
 
-                            TextView titleg = dialog.findViewById(R.id.title);
-                            titleg.setText(audioList.get(position).getName());
-
-                            Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
-
-                            String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
-                            final MediaPlayer mediaPlayer = new MediaPlayer();
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            try
-                            {
-                                mediaPlayer.setDataSource(url);
-                                mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                            }
-                            catch (IOException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            mediaPlayer.start();
-
-                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
-
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    prog.dismiss();
-                                }
-                            });
-
-                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    mediaPlayer.stop();
-                                    mediaPlayer.release();
-                                }
-                            });
-
-                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    mediaPlayer.release();
-                                    dialog.cancel();
-                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                    transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
-                                }
-                            });
                         }
+                        else{
+                            if(position == audioAdapter.getItemCount() - 1) {
+                                AudioFragment audioFragment = new AudioFragment();
+                                audioFragment.setArguments(getArguments());
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, audioFragment).addToBackStack("allaudio").commit();
+                                ((Dashboard)getActivity()).changeText("All Audio");
+                            }
+                            else
+                            {
+                                final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+
+                                final Dialog dialog = new Dialog(getActivity());
+                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog.setContentView(R.layout.intromusic);
+                                dialog.show();
+
+                                TextView titleg = dialog.findViewById(R.id.title);
+                                titleg.setText(audioList.get(position).getName());
+
+                                Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+
+                                String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
+                                final MediaPlayer mediaPlayer = new MediaPlayer();
+                                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                try
+                                {
+                                    mediaPlayer.setDataSource(url);
+                                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                                }
+                                catch (IOException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                                mediaPlayer.start();
+
+                                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        prog.dismiss();
+                                    }
+                                });
+
+                                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        if(!stopped)
+                                        {
+                                           mediaPlayer.stop();
+                                           mediaPlayer.release();
+                                        }
+                                    }
+                                });
+
+                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mediaPlayer.release();
+                                        dialog.cancel();
+                                        stopped = true;
+                                        Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                        transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
+
+                                    }
+                                });
+                            }
+                        }
+
                     }
                     @Override public void onLongItemClick(View view, int position)
                     {
@@ -491,6 +550,9 @@ public class HomeFragment extends Fragment {
 
     public void retrieveImages(final UserModel user)
     {
+        showDialog();
+
+
         String tag_string_req = "req_images";
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
@@ -499,6 +561,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(String response) {
                 Log.d("Image", "Image Response: " + response.toString());
+
+               hideDialog();
+
+                photoList.clear();
 
                 try {
 
@@ -511,12 +577,12 @@ public class HomeFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
                         String image = dataObj.getString("doc_image");
+                        String payout = dataObj.getString("reach_out_price");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, image);
+                        Album album = new Album(id, name, Integer.parseInt(payout), image);
                         photoList.add(album);
 
                     }
@@ -527,6 +593,8 @@ public class HomeFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
+                    photoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    photoAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
 
@@ -570,12 +638,18 @@ public class HomeFragment extends Fragment {
     {
         String tag_string_req = "req_videos";
 
+        showDialog();
+
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 AppConfig.URL_VIDEOS, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d("Video", "Video Response: " + response.toString());
+
+                hideDialog();
+
+                videoList.clear();
 
                 try {
 
@@ -588,12 +662,12 @@ public class HomeFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
+                        int payout = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String video = dataObj.getString("video");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, video);
+                        Album album = new Album(id, name, payout, video);
                         videoList.add(album);
                     }
 
@@ -602,8 +676,11 @@ public class HomeFragment extends Fragment {
                     videoAdapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
+
+                    videoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    videoAdapter.notifyDataSetChanged();
                     // JSON error
-                    e.printStackTrace();
+                    Log.d("Video", "Video error: " + e.toString());
                 }
 
             }
@@ -644,12 +721,18 @@ public class HomeFragment extends Fragment {
     {
         String tag_string_req = "req_audio";
 
+        showDialog();
+
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 AppConfig.URL_AUDIO, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d("Audio", "Audio Response: " + response.toString());
+
+                hideDialog();
+
+                audioList.clear();
 
                 try {
 
@@ -662,12 +745,12 @@ public class HomeFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         String name = dataObj.getString("a_title");
-                        int timeCount = 15;
+                        int payout = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String audio = dataObj.getString("audio");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, timeCount, audio);
+                        Album album = new Album(id, name, payout, audio);
                         audioList.add(album);
                     }
 
@@ -679,6 +762,8 @@ public class HomeFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
+                    audioList.add(new Album("8888", "No more ads", 0, "abc"));
+                    audioAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
 
@@ -737,7 +822,7 @@ public class HomeFragment extends Fragment {
             viewPagerTimer.cancel();
     }
 
-    public void transferBalance(final String mediaId, String url, final UserModel user)
+    public void transferBalance(final String mediaId, final String url, final UserModel user)
     {
         String tag_string_req = "req_transfer";
 
@@ -755,6 +840,21 @@ public class HomeFragment extends Fragment {
                     String status = jObj.getString("status");
                     String status_message = jObj.getString("status_message");
                     String data = jObj.getString("data");
+
+                    if(url.equals(AppConfig.URL_TRANSFER_PICTURE))
+                    {
+                        retrieveImages(user);
+                    }
+                    else if(url.equals(AppConfig.URL_TRANSFER_AUDIO))
+                    {
+                        retrieveAudio(user);
+                    }
+                    else
+                    {
+                        retrieveVideos(user);
+                    }
+
+                    checkLogin(sharedPreferences.getString("userEmail", ""), sharedPreferences.getString("userPassword", ""));
 
                     Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
 
@@ -815,15 +915,102 @@ public class HomeFragment extends Fragment {
 
         idsList = new ArrayList<>();
 
-        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList, this);
+        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList,this);
 
     }
+
+    private void checkLogin(final String email, final String password) {
+        // Tag used to cancel the request
+        String tag_string_req = "req_login";
+
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_LOGIN, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Login", "Login Response: " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+
+                    JSONArray jsonArray = jObj.getJSONArray("data");
+
+                    JSONObject dataObj = jsonArray.getJSONObject(0);
+
+                    UserModel user = new UserModel( getString(dataObj, "f_name"),
+                            getString(dataObj, "l_name"),
+                            getString(dataObj, "email"),
+                            getString(dataObj, "phone"),
+                            getString(dataObj, "location"),
+                            getString(dataObj, "college"),
+                            getString(dataObj, "level"),
+                            getString(dataObj, "field_of_study"),
+                            getString(dataObj, "company"),
+                            getString(dataObj, "post"),
+                            getString(dataObj, "interest"),
+                            getString(dataObj, "id"),
+                            getString(dataObj, "reg_date"),
+                            getString(dataObj, "balance"),
+                            getString(dataObj, "age"),
+                            getString(dataObj, "sex"));
+
+                    Log.d("User", user.toString());
+
+                    userObj = user;
+
+                    ((Dashboard)getActivity()).changeNameBalance(user.getF_name() + " " + user.getL_name(), user.getBalance());
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    Log.d("Video", "Video error: " + e.toString());
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                hideDialog();
+                Log.e("Login", "Login Error: " + error.getMessage());
+
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put("ead_tokan", AppConfig.EAD_TOKEN);
+//                params.put("ead_email", email);
+                params.put("ead_token", AppConfig.EAD_TOKEN);
+                params.put("ead_email", email);
+                params.put("ead_password", password);
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+    public String getString(JSONObject jsonObject, String stringToken) throws JSONException {
+        return jsonObject.getString(stringToken);
+    }
+
 
 
     public void init()
     {
 
         Log.d("Count", "Here");
+
 
         slidingImage_adapter.notifyDataSetChanged();
 
@@ -888,6 +1075,7 @@ public class HomeFragment extends Fragment {
     public void retrieveFeatured(final UserModel user)
     {
         String tag_string_req = "req_featured";
+        showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 AppConfig.URL_FEATURED, new Response.Listener<String>() {
@@ -898,6 +1086,8 @@ public class HomeFragment extends Fragment {
 
                 try {
 
+                    hideDialog();
+
                     JSONObject jObj = new JSONObject(response);
 
                     JSONArray jsonArray = jObj.getJSONArray("data");
@@ -907,6 +1097,8 @@ public class HomeFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         int timeCount = 15;
+                        idsList.clear();
+                        imageList.clear();
 
                         switch (i)
                         {
@@ -949,6 +1141,10 @@ public class HomeFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
+                    Album album = new Album("8888", "No more ads", 0, "abc");
+                    idsList.add("8888");
+                    imageList.add(album.getThumbnail());
+                    init();
                     e.printStackTrace();
                 }
 
@@ -984,6 +1180,21 @@ public class HomeFragment extends Fragment {
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
 
 
+    }
+
+
+    private void showDialog() {
+        mainLoadingView.setVisibility(View.VISIBLE);
+        mainScrollView.setVisibility(View.GONE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).hideToolbar();
+    }
+
+    private void hideDialog() {
+        mainLoadingView.setVisibility(View.GONE);
+        mainScrollView.setVisibility(View.VISIBLE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).showToolbar();
     }
 
 

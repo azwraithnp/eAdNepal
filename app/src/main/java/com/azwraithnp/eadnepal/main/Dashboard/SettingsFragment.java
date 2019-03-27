@@ -101,9 +101,9 @@ public class SettingsFragment extends Fragment {
                 passChangeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(oldPasswordEnter.getText().toString().equals(oldPassword))
+                        if(oldPasswordEnter.getText().toString().equals(oldPassword) && !oldPasswordEnter.getText().toString().isEmpty())
                         {
-                            if(newPasswordEnter.getText().toString().equals(newPasswordConfirmEnter.getText().toString()))
+                            if(newPasswordEnter.getText().toString().equals(newPasswordConfirmEnter.getText().toString()) && !newPasswordEnter.getText().toString().isEmpty() && !newPasswordConfirmEnter.getText().toString().isEmpty())
                             {
                                 Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
                                 changePassword(user, newPasswordEnter.getText().toString());

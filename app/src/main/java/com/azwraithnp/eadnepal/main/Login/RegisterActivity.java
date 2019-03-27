@@ -1,7 +1,10 @@
 package com.azwraithnp.eadnepal.main.Login;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -131,9 +134,21 @@ public class RegisterActivity extends AppCompatActivity {
 
                     String status = jObj.getString("status");
                     String status_message = jObj.getString("status_message");
+                    String data  = jObj.getString("data");
 
-                    Toast.makeText(RegisterActivity.this, status_message, Toast.LENGTH_SHORT).show();
-
+                    if(status_message.equals("Logged In"))
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                        builder.setMessage(data);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        });
+                        builder.show();
+                    }
 
                 } catch (JSONException e) {
                     // JSON error
@@ -180,7 +195,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
-
 
     }
 

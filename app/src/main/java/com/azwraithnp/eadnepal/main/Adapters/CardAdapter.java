@@ -27,12 +27,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, count;
         public ImageView thumbnail;
+        public ImageView overflow;
 
         public MyViewHolder(View view) {
             super(view);
             title = view.findViewById(R.id.title);
             count = view.findViewById(R.id.count);
             thumbnail = view.findViewById(R.id.thumbnail);
+            overflow = view.findViewById(R.id.overflow);
         }
     }
 
@@ -99,15 +101,37 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             holder.title.setText(album.getName());
             Glide.with(mContext).load(R.drawable.ic_baseline_add_24px).into(holder.thumbnail);
             holder.thumbnail.setPadding(60, 100, 60, 100);
+            if(!displayType.equals("photo"))
+            {
+                holder.overflow.setVisibility(View.GONE);
+            }
+        }
+        else if(album.getId().equals("8888"))
+        {
+            holder.title.setText(album.getName());
+            Glide.with(mContext).load(R.drawable.baseline_warning_black_48dp).into(holder.thumbnail);
+            holder.thumbnail.setPadding(60, 100, 60, 100);
+            holder.thumbnail.setScaleType(ImageView.ScaleType.CENTER);
+            if(!displayType.equals("photo"))
+            {
+                try {
+                    holder.overflow.setVisibility(View.GONE);
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
+            }
         }
         else
         {
             holder.title.setText(album.getName());
-            holder.count.setText(album.getTimeCount() + " seconds");
+            double payout = 0.7 * album.getTimeCount();
+            holder.count.setText("Payout: "+ "Rs." + payout);
             //  loading album cover using Glide library
             if(displayType.equals("audio") || displayType.equals("audioall"))
             {
-                Glide.with(mContext).load(R.drawable.baseline_audiotrack_black_24).into(holder.thumbnail);
+                Glide.with(mContext).load(R.drawable.baseline_music_note_black_48dp).into(holder.thumbnail);
             }
             else
             {
