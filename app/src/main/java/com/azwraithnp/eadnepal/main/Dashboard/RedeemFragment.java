@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import com.azwraithnp.eadnepal.R;
 import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +54,10 @@ public class RedeemFragment extends Fragment {
 
     ProgressDialog progressDialog;
 
+    AVLoadingIndicatorView avLoadingIndicatorView;
+    LinearLayout mainRedeemView;
+    RelativeLayout mainLoadingView;
+
     public RedeemFragment() {
         // Required empty public constructor
 
@@ -65,6 +72,12 @@ public class RedeemFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_redeem, container, false);
 
         ((Dashboard)getActivity()).changeText("Redeem");
+
+        avLoadingIndicatorView = v.findViewById(R.id.avi);
+        mainLoadingView = v.findViewById(R.id.loadingView);
+        mainLoadingView.setVisibility(View.GONE);
+
+        mainRedeemView = v.findViewById(R.id.mainRedeemView);
 
         setupViews(v);
 
@@ -222,13 +235,21 @@ public class RedeemFragment extends Fragment {
     }
 
     private void showDialog() {
-        if (!progressDialog.isShowing())
-            progressDialog.show();
+//        if (!progressDialog.isShowing())
+//            progressDialog.show();
+        mainLoadingView.setVisibility(View.VISIBLE);
+        mainRedeemView.setVisibility(View.GONE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).hideToolbar();
     }
 
     private void hideDialog() {
-        if (progressDialog.isShowing())
-            progressDialog.dismiss();
+//        if (progressDialog.isShowing())
+//            progressDialog.dismiss();
+        mainLoadingView.setVisibility(View.GONE);
+        mainRedeemView.setVisibility(View.VISIBLE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).showToolbar();
     }
 
     public String getString(JSONObject jsonObject, String stringToken) throws JSONException {

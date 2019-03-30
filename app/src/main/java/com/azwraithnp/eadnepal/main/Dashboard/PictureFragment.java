@@ -100,7 +100,7 @@ public class PictureFragment extends Fragment {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (!recyclerView.canScrollVertically(1)) {
+                if (!recyclerView.canScrollVertically(1) && imageList.size() <=1) {
                     retrieveImages(user, imageList.get(imageList.size()-1).getId());
                 }
             }

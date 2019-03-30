@@ -79,6 +79,7 @@ public class HomeFragment extends Fragment {
     private CirclePageIndicator indicator;
     private  int currentPage = 0;
     private  int NUM_PAGES = 0;
+    public int MAX_HEIGHT = 0;
 
     private RecyclerView photoRecyclerView;
     private CardAdapter photoAdapter;
@@ -854,6 +855,8 @@ public class HomeFragment extends Fragment {
                         retrieveVideos(user);
                     }
 
+                    retrieveFeatured(user);
+
                     checkLogin(sharedPreferences.getString("userEmail", ""), sharedPreferences.getString("userPassword", ""));
 
                     Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
@@ -961,7 +964,8 @@ public class HomeFragment extends Fragment {
 
                     userObj = user;
 
-                    ((Dashboard)getActivity()).changeNameBalance(user.getF_name() + " " + user.getL_name(), user.getBalance());
+                    if(getActivity() !=null)
+                        ((Dashboard)getActivity()).changeNameBalance(user.getF_name() + " " + user.getL_name(), user.getBalance());
 
 
                 } catch (JSONException e) {
@@ -1188,6 +1192,11 @@ public class HomeFragment extends Fragment {
         mainScrollView.setVisibility(View.GONE);
         if(getActivity() != null)
             ((Dashboard)getActivity()).hideToolbar();
+    }
+
+    public void setMAX_HEIGHT(int MAX_HEIGHT)
+    {
+        this.MAX_HEIGHT = MAX_HEIGHT;
     }
 
     private void hideDialog() {

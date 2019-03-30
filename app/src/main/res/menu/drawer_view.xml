@@ -38,6 +38,12 @@
             android:title="Place your ad" />
 
         <item
+            android:id="@+id/nav_verify"
+            android:visible="false"
+            android:icon="@drawable/baseline_account_circle_black_24"
+            android:title="Verify account" />
+
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/baseline_settings_black_24"
             android:title="Settings" />

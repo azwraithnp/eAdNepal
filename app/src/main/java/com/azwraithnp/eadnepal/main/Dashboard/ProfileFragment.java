@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
 import com.google.gson.Gson;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +51,10 @@ public class ProfileFragment extends Fragment {
 
     UserModel userObj;
 
+    AVLoadingIndicatorView avLoadingIndicatorView;
+    RelativeLayout mainProfileView;
+    RelativeLayout mainLoadingView;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -65,6 +72,12 @@ public class ProfileFragment extends Fragment {
         progressDialog.setCancelable(false);
 
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        avLoadingIndicatorView = v.findViewById(R.id.avi);
+        mainLoadingView = v.findViewById(R.id.loadingView);
+        mainLoadingView.setVisibility(View.GONE);
+
+        mainProfileView = v.findViewById(R.id.mainProfileView);
 
         setupViews(v);
 
@@ -109,7 +122,6 @@ public class ProfileFragment extends Fragment {
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
-        progressDialog.setMessage("Logging in ...");
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
@@ -199,8 +211,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showDialog() {
-        if (!progressDialog.isShowing())
-            progressDialog.show();
+//        if (!progressDialog.isShowing())
+//            progressDialog.show();
+        mainLoadingView.setVisibility(View.VISIBLE);
+        mainProfileView.setVisibility(View.GONE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).hideToolbar();
     }
 
     public String getString(JSONObject jsonObject, String stringToken) throws JSONException {
@@ -208,8 +224,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void hideDialog() {
-        if (progressDialog.isShowing())
-            progressDialog.dismiss();
+//        if (progressDialog.isShowing())
+//            progressDialog.dismiss();
+        mainLoadingView.setVisibility(View.GONE);
+        mainProfileView.setVisibility(View.VISIBLE);
+        if(getActivity() != null)
+            ((Dashboard)getActivity()).showToolbar();
     }
 
 }

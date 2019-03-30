@@ -115,7 +115,6 @@ public class HistoryFragment extends Fragment {
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 history_url, new Response.Listener<String>() {
 
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(String response) {
                 Log.d("History", "History Response: " + response.toString());
@@ -147,7 +146,8 @@ public class HistoryFragment extends Fragment {
 
                     HistoryViewFragment historyViewFragment = new HistoryViewFragment();
                     historyViewFragment.setArguments(bundle);
-                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyViewFragment).addToBackStack("historyMain").commit();
+                    if(getActivity() != null)
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyViewFragment).addToBackStack("historyMain").commit();
 
                 } catch (JSONException e) {
                     // JSON error

@@ -97,7 +97,7 @@ public class VideoFragment extends Fragment {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (!recyclerView.canScrollVertically(1)) {
+                if (!recyclerView.canScrollVertically(1) && videoList.size() <=1) {
                     retrieveVideos(user, videoList.get(videoList.size()-1).getId());
                 }
             }

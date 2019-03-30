@@ -72,6 +72,8 @@ public class Dashboard extends AppCompatActivity {
         final Bundle bundle = new Bundle();
         bundle.putString("User", json);
 
+
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -94,6 +96,12 @@ public class Dashboard extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.frame, homeFragment).commit();
 
         final NavigationView navigationView = findViewById(R.id.nav_view);
+
+        UserModel user = new Gson().fromJson(json, UserModel.class);
+        if(user.getEmail().equals("alish1manandhar@gmail.com") || user.getEmail().equals("avimshra@gmail.com"))
+        {
+            navigationView.getMenu().findItem(R.id.nav_verify).setVisible(true);
+        }
 
         View hView =  navigationView.getHeaderView(0);
         nameHolder = hView.findViewById(R.id.nameHolder);
@@ -169,6 +177,12 @@ public class Dashboard extends AppCompatActivity {
                                 Intent i = new Intent(Intent.ACTION_VIEW);
                                 i.setData(Uri.parse(url));
                                 startActivity(i);
+                                break;
+
+                            case R.id.nav_verify:
+                                VerifyFragment verifyFragment = new VerifyFragment();
+                                verifyFragment.setArguments(bundle);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, verifyFragment).addToBackStack("verify").commit();
                                 break;
 
                             case R.id.nav_settings:

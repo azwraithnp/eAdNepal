@@ -2,6 +2,7 @@ package com.azwraithnp.eadnepal.main.Adapters;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -23,11 +24,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     private List<Album> albumList;
     private String displayType;
     private String displayUrl;
+    public int MAX_HEIGHT;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, count;
         public ImageView thumbnail;
         public ImageView overflow;
+        public CardView cardView;
 
         public MyViewHolder(View view) {
             super(view);
@@ -35,6 +38,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             count = view.findViewById(R.id.count);
             thumbnail = view.findViewById(R.id.thumbnail);
             overflow = view.findViewById(R.id.overflow);
+            cardView = view.findViewById(R.id.card_view);
         }
     }
 
@@ -43,6 +47,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         this.mContext = mContext;
         this.albumList = albumList;
         this.displayType = displayType;
+        this.MAX_HEIGHT = MAX_HEIGHT;
     }
 
     @Override
@@ -137,6 +142,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             {
                 Glide.with(mContext).load(displayUrl + album.getThumbnail()).into(holder.thumbnail);
             }
+
 
 
 

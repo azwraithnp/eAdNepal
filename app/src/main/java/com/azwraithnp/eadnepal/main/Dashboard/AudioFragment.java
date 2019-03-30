@@ -101,7 +101,7 @@ public class AudioFragment extends Fragment {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (!recyclerView.canScrollVertically(1)) {
+                if (!recyclerView.canScrollVertically(1) && audioList.size() <=1) {
                     retrieveAudio(user, audioList.get(audioList.size()-1).getId());
                 }
             }

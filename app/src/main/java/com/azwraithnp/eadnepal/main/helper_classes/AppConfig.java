@@ -39,4 +39,11 @@ public class AppConfig {
 
     public static String URL_FORGOT_PASSWORD = "https://eadnepal.com/apis/renew_password/";
 
+    public static String URL_VERIFY_LIST = "https://eadnepal.com/apis/validate_customer/";
+
+    public static String URL_CLIENT_DETAILS = "https://eadnepal.com/apis/clientDetails/";
+
+    public static String URL_VERIFY_CLIENT = "https://eadnepal.com/apis/validate_onclick/";
+
+
 }
