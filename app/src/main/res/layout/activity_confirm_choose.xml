@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".main.Dashboard.ChooseActivity">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:id="@+id/loadingView"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/colorPrimary"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorName="BallScaleMultipleIndicator"
+            style="@style/AVLoadingIndicatorView.Large"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainView"
+        android:padding="20dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/chooseHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm your interests"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/chooseHeaderDesc"
+        android:layout_below="@id/chooseHeader"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make sure these are the interests that fit you"/>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/nachoHeader"
+        android:layout_below="@id/chooseHeaderDesc"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="8dp">
+        <com.hootsuite.nachos.NachoTextView
+            android:id="@+id/nacho_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="8"
+            android:editable="false"
+            android:hint="Interests that you chose" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <Button
+        android:layout_below="@id/nachoHeader"
+        android:id="@+id/backButton"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_white"
+        android:text="No, let me select my choices again" />
+
+
+    <Button
+        android:layout_below="@id/backButton"
+        android:layout_margin="10dp"
+        android:id="@+id/confirmButton"
+        android:gravity="center"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_white"
+        android:text="Yes, proceed with the login" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

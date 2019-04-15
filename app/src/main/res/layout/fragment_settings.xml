@@ -4,39 +4,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".main.Dashboard.SettingsFragment">
-<RelativeLayout
-    android:layout_margin="20dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<!--<RelativeLayout-->
+    <!--android:layout_margin="20dp"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
 
-    <TextView
-        android:id="@+id/autologinText"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:text="Auto Login"/>
+    <!--<TextView-->
+        <!--android:id="@+id/autologinText"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:textSize="20sp"-->
+        <!--android:gravity="center"-->
+        <!--android:text="Auto Login"/>-->
 
-    <Switch
-        android:layout_toRightOf="@id/autologinText"
-        android:id="@+id/switchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_toEndOf="@id/autologinText"
-        android:layout_alignParentEnd="true" />
+    <!--<Switch-->
+        <!--android:layout_toRightOf="@id/autologinText"-->
+        <!--android:id="@+id/switchButton"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_toEndOf="@id/autologinText"-->
+        <!--android:layout_alignParentEnd="true" />-->
 
-    <TextView
-        android:layout_below="@id/autologinText"
-        android:id="@+id/passwordChangeText"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:textSize="20sp"
+    <!--<TextView-->
+        <!--android:layout_below="@id/autologinText"-->
+        <!--android:id="@+id/passwordChangeText"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:textSize="20sp"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:text="Change Password"/>-->
+
+
+
+<!--</RelativeLayout>-->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
         android:gravity="center_vertical"
-        android:text="Change Password"/>
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="6dip"
+            android:layout_weight="1">
+
+            <TextView android:id="@+id/autologinText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto Login"
+                android:singleLine="true"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal" />
+
+            <TextView android:id="@android:id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login automatically without entering credentials"
+                android:layout_below="@id/autologinText"
+                android:layout_alignLeft="@android:id/title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:maxLines="2" />
+
+            <Switch
+                android:id="@+id/switchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerHorizontal"/>
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="6dip"
+            android:layout_weight="1">
+
+            <TextView android:id="@+id/passwordChangeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:text="Change Password"
+                />
+
+            <TextView android:id="@android:id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change password credential for your account"
+                android:layout_below="@id/passwordChangeText"
+                android:layout_alignLeft="@android:id/title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:maxLines="2" />
 
 
+        </RelativeLayout>
 
-</RelativeLayout>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerHorizontal"/>
+
+
+    </LinearLayout>
+
+
 
 </FrameLayout>

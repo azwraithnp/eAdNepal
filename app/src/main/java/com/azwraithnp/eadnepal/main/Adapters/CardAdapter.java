@@ -87,6 +87,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         return new MyViewHolder(itemView);
     }
 
+
     public int getScreenWidth() {
 
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);

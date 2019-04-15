@@ -53,6 +53,9 @@ public class ClientDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_client_details, container, false);
 
+        if(getActivity() !=null)
+            ((Dashboard)getActivity()).currentFragment="ClientDetailsFragment";
+
         nameField = v.findViewById(R.id.nameValue);
         emailField = v.findViewById(R.id.emailValue);
         phoneField = v.findViewById(R.id.phoneValue);

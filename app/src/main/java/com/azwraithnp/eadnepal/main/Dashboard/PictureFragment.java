@@ -78,7 +78,11 @@ public class PictureFragment extends Fragment {
 
         imageList = new ArrayList<>();
 
-        ((Dashboard)getActivity()).changeText("All Picture");
+        if(getActivity() !=null)
+        {
+            ((Dashboard)getActivity()).changeText("All Picture");
+            ((Dashboard)getActivity()).currentFragment="PictureFragment";
+        }
 
         final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 

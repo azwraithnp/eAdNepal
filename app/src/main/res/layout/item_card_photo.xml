@@ -43,6 +43,8 @@
                 android:text="Image 1"
                 android:textSize="@dimen/album_title" />
 
+
+
             <TextView
                 android:id="@+id/count"
                 android:layout_width="match_parent"

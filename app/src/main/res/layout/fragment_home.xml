@@ -32,128 +32,141 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<RelativeLayout
-    android:id="@+id/mainLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/mainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="fill_parent"
-        android:layout_height="250dp"
-        android:layout_alignParentTop="true" />
-
-
-    <com.viewpagerindicator.CirclePageIndicator
-        android:id="@+id/indicator"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/pager"
-        android:layout_centerHorizontal="true"
-        android:gravity="bottom"
-        android:padding="10dip"
-        app:centered="true"
-        app:fillColor="@color/colorPrimaryDark"
-        app:pageColor="#fff"
-        app:snap="false" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Featured"
-            android:textStyle="bold|italic"
-            android:textColor="@color/white"
-            android:layout_marginRight="8dp"
-            android:translationY="26dp"
-            android:background="@drawable/shape"
-            android:layout_centerHorizontal="true"
-            android:layout_alignBottom="@id/pager"/>
-
-    <RelativeLayout
-        android:layout_below="@id/pager"
-        android:id="@+id/pictureHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingBottom="5dp"
-        android:paddingTop="40dp">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
+                android:layout_width="fill_parent"
+                android:layout_height="250dp"
+                android:layout_alignParentTop="true" />
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Picture"
-            android:textStyle="bold|italic"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp" />
-    </RelativeLayout>
+            <com.viewpagerindicator.CirclePageIndicator
+                android:id="@+id/indicator"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/pager"
+                android:layout_centerHorizontal="true"
+                android:gravity="bottom"
+                android:padding="10dip"
+                app:centered="true"
+                app:fillColor="@color/colorPrimaryDark"
+                app:pageColor="#fff"
+                app:snap="false" />
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/pictureHeader"
-        android:id="@+id/photo_recycler_view"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Featured"
+                android:textStyle="bold|italic"
+                android:textColor="@color/white"
+                android:layout_marginRight="8dp"
+                android:translationY="26dp"
+                android:background="@drawable/shape"
+                android:layout_centerHorizontal="true"
+                android:layout_alignBottom="@id/pager"/>
 
-    <RelativeLayout
-        android:layout_below="@id/photo_recycler_view"
-        android:id="@+id/videoHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="5dp" >
+            <RelativeLayout
+                android:layout_below="@id/pager"
+                android:id="@+id/pictureHeader"
+                android:background="#F4ECF7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="40dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Video"
-            android:textStyle="bold|italic"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp" />
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/pictureTitle"
+                    android:background="@drawable/shape2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Picture"
+                    android:textAlignment="center"
+                    android:padding="10dp"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/videoHeader"
-        android:id="@+id/video_recycler_view"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+                <android.support.v7.widget.RecyclerView
+                    android:layout_below="@id/pictureTitle"
+                    android:id="@+id/photo_recycler_view"
+                    android:scrollbars="vertical"
+                    android:background="#F4ECF7"
+                    android:clipToPadding="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_below="@id/video_recycler_view"
-        android:id="@+id/audioHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="5dp" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Audio"
-            android:textColor="@color/colorPrimaryDark"
-            android:textStyle="bold|italic"
-            android:textSize="20sp" />
-    </RelativeLayout>
+            <RelativeLayout
+                android:layout_below="@id/pictureHeader"
+                android:id="@+id/videoHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FDEDEC"
+                android:padding="5dp" >
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/audioHeader"
-        android:id="@+id/audio_recycler_view"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Video"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:background="@drawable/shape3"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp" />
+            </RelativeLayout>
 
-</RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:layout_below="@id/videoHeader"
+                android:id="@+id/video_recycler_view"
+                android:scrollbars="vertical"
+                android:clipToPadding="false"
+                android:background="#FDEDEC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <RelativeLayout
+                android:layout_below="@id/video_recycler_view"
+                android:id="@+id/audioHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#D1F2EB"
+                android:padding="5dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Audio"
+                    android:background="@drawable/shape4"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold|italic"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_below="@id/audioHeader"
+                android:id="@+id/audio_recycler_view"
+                android:scrollbars="vertical"
+                android:background="#D1F2EB"
+                android:clipToPadding="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
     </ScrollView>
 </FrameLayout>

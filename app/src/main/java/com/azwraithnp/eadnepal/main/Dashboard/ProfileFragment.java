@@ -65,7 +65,12 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        ((Dashboard)getActivity()).changeText("Profile");
+        if(getActivity() !=null)
+        {
+
+            ((Dashboard)getActivity()).changeText("Profile");
+            ((Dashboard)getActivity()).currentFragment="ProfileFragment";
+        }
 
         progressDialog = new ProgressDialog(getActivity(),
                 R.style.AppTheme_Dark_Dialog);

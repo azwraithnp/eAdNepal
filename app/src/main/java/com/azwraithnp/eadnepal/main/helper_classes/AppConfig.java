@@ -45,5 +45,8 @@ public class AppConfig {
 
     public static String URL_VERIFY_CLIENT = "https://eadnepal.com/apis/validate_onclick/";
 
+    public static String URL_INTERESTS_LIST = "https://eadnepal.com/apis/interest_list/";
+
+    public static String URL_SELECT_INTEREST = "https://eadnepal.com/apis/select_interest/";
 
 }

@@ -71,7 +71,11 @@ public class RedeemFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_redeem, container, false);
 
-        ((Dashboard)getActivity()).changeText("Redeem");
+        if(getActivity() !=null)
+        {
+            ((Dashboard)getActivity()).changeText("Redeem");
+            ((Dashboard)getActivity()).currentFragment="RedeemFragment";
+        }
 
         avLoadingIndicatorView = v.findViewById(R.id.avi);
         mainLoadingView = v.findViewById(R.id.loadingView);

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".main.Dashboard.ChooseActivity">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:id="@+id/loadingView"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorName="BallScaleMultipleIndicator"
+            style="@style/AVLoadingIndicatorView.Large"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:padding="20dp"
+        android:id="@+id/mainView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+    <TextView
+        android:id="@+id/chooseHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose your interests"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/chooseHeaderDesc"
+        android:layout_below="@id/chooseHeader"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can update these later"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/chooseHeaderDesc"
+        android:id="@+id/interests_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="50dp"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/doneBtn"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shape_white"
+        android:text="Done"
+        android:layout_alignParentRight="true" />
+
+    <Button
+        android:id="@+id/nextSet"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_toLeftOf="@id/doneBtn"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shape_white"
+        android:text="Next set"
+        android:layout_toStartOf="@id/doneBtn" />
+    </RelativeLayout>
+
+</RelativeLayout>

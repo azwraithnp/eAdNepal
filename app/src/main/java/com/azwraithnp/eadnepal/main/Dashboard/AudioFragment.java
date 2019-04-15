@@ -81,7 +81,11 @@ public class AudioFragment extends Fragment {
 
         final UserModel user = gson.fromJson(getArguments().getString("User"), UserModel.class);
 
-        ((Dashboard)getActivity()).changeText("All Audio");
+        if(getActivity() !=null)
+        {
+            ((Dashboard)getActivity()).changeText("All Audio");
+            ((Dashboard)getActivity()).currentFragment="AudioFragment";
+        }
 
         View v = inflater.inflate(R.layout.fragment_audio, container, false);
 

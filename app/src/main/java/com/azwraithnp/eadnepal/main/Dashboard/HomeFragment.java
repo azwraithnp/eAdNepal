@@ -136,7 +136,11 @@ public class HomeFragment extends Fragment {
         assert getArguments() != null;
         this.userJSON = getArguments().getString("User");
 
-        ((Dashboard)getActivity()).changeText(getResources().getString(R.string.app_name));
+        if(getActivity() !=null)
+        {
+            ((Dashboard)getActivity()).changeText(getResources().getString(R.string.app_name));
+            ((Dashboard)getActivity()).currentFragment="HomeFragment";
+        }
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -1013,8 +1017,7 @@ public class HomeFragment extends Fragment {
     public void init()
     {
 
-        Log.d("Count", "Here");
-
+        Log.d("Count", "Here" + imageList.get(0));
 
         slidingImage_adapter.notifyDataSetChanged();
 
@@ -1090,6 +1093,9 @@ public class HomeFragment extends Fragment {
 
                 try {
 
+                    idsList.clear();
+                    imageList.clear();
+
                     hideDialog();
 
                     JSONObject jObj = new JSONObject(response);
@@ -1101,8 +1107,6 @@ public class HomeFragment extends Fragment {
                         JSONObject dataObj = jsonArray.getJSONObject(i);
 
                         int timeCount = 15;
-                        idsList.clear();
-                        imageList.clear();
 
                         switch (i)
                         {

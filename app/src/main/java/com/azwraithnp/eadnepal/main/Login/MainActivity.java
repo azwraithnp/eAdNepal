@@ -2,8 +2,13 @@ package com.azwraithnp.eadnepal.main.Login;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.azwraithnp.eadnepal.R;
+import com.azwraithnp.eadnepal.main.Dashboard.ChooseActivity;
 import com.azwraithnp.eadnepal.main.Dashboard.Dashboard;
 import com.azwraithnp.eadnepal.main.Models.UserModel;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
@@ -28,7 +34,12 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupViews();
+
+        new GetVersionCode().execute();
 
         SharedPreferences sharedPreferences = getSharedPreferences("userPref", MODE_PRIVATE);
 
@@ -104,6 +117,84 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public class GetVersionCode extends AsyncTask<Void, String, String> {
+        @Override
+
+        protected String doInBackground(Void... voids) {
+
+            String newVersion = null;
+
+            try {
+                Document document = Jsoup.connect("https://play.google.com/store/apps/details?id=" + MainActivity.this.getPackageName()  + "&hl=en")
+                        .timeout(30000)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .get();
+                if (document != null) {
+                    Elements element = document.getElementsContainingOwnText("Current Version");
+                    for (Element ele : element) {
+                        if (ele.siblingElements() != null) {
+                            Elements sibElemets = ele.siblingElements();
+                            for (Element sibElemet : sibElemets) {
+                                newVersion = sibElemet.text();
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return newVersion;
+
+        }
+
+
+        @Override
+
+        protected void onPostExecute(String onlineVersion) {
+
+            super.onPostExecute(onlineVersion);
+
+            String currentVersion = null;
+            try {
+                currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if (onlineVersion != null && !onlineVersion.isEmpty()) {
+
+                if (Float.valueOf(currentVersion) < Float.valueOf(onlineVersion)) {
+                    //show anything
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("Updates provide fixes to critical bugs, performance and design improvements that help" +
+                            "improve your experience in using our application. Please update to continue");
+                    builder.setTitle("Update required");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                            }
+                            finish();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+            }
+
+            Log.d("update", "Current version " + currentVersion + "playstore version " + onlineVersion);
+
+        }
+
+    }
+
 
     public void setupViews()
     {
@@ -222,8 +313,10 @@ public class MainActivity extends AppCompatActivity {
                                                     getString(dataObj, "age"),
                                                     getString(dataObj, "sex"));
 
-                    Log.d("User", user.toString());
+                    String userStatus = dataObj.getString("status");
 
+                    Log.d("User", user.toString());
+                    Log.d("User status", userStatus);
 
                     Gson gson = new Gson();
                     String json = gson.toJson(user);
@@ -237,8 +330,17 @@ public class MainActivity extends AppCompatActivity {
 
                     if(Integer.parseInt(status) == 200 && status_message.equals("Logged In"))
                     {
-                        startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", json));
-                        finish();
+                        if(userStatus.equals("1"))
+                        {
+                            startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", json));
+                            finish();
+                        }
+                        else
+                        {
+                            startActivity(new Intent(MainActivity.this, ChooseActivity.class).putExtra("User", json));
+                            finish();
+                        }
+
                     }
 
                 } catch (JSONException e) {
@@ -282,6 +384,8 @@ public class MainActivity extends AppCompatActivity {
         return jsonObject.getString(stringToken);
     }
 
+
+
     public boolean isEmpty(EditText ...edit)
     {
         for(EditText editText: edit)
@@ -307,3 +411,5 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
     }
 }
+
+

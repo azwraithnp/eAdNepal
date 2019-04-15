@@ -12,18 +12,28 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <activity android:name=".main.Dashboard.ConfirmChoose"></activity>
+        <activity android:name=".main.Dashboard.ChooseActivity">
 
-        <activity android:name=".main.Dashboard.Dashboard" android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:screenOrientation="portrait"></activity>
+        </activity>
+        <activity android:name=".main.Dashboard.SampleActivity"></activity>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".main.Dashboard.Dashboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".main.Login.RegisterActivity"
-            android:theme="@style/AppTheme.Dark"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".main.Login.MainActivity"
-            android:theme="@style/AppTheme.Dark"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />

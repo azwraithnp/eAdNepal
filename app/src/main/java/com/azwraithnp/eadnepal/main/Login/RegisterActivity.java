@@ -3,17 +3,23 @@ package com.azwraithnp.eadnepal.main.Login;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Spanned;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,8 +31,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.azwraithnp.eadnepal.R;
 import com.azwraithnp.eadnepal.main.helper_classes.AppConfig;
 import com.azwraithnp.eadnepal.main.helper_classes.AppController;
+import com.hootsuite.nachos.ChipConfiguration;
 import com.hootsuite.nachos.NachoTextView;
+import com.hootsuite.nachos.chip.Chip;
 import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
+import com.hootsuite.nachos.tokenizer.ChipTokenizer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,22 +97,25 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        String[] suggestions = new String[]{"Graphics Design", "Films", "Music", "Technology", "Medical", "Agriculture", "Hotels", "Bookings"};
+//        String[] suggestions = new String[]{"Graphics Design", "Films", "Music", "Technology", "Medical", "Agriculture", "Hotels", "Bookings"};
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.choice_item_layout, suggestions);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.choice_item_layout, suggestions);
 
-        nachoTextView.setAdapter(adapter);
+//        nachoTextView.setAdapter(adapter);
 
-        nachoTextView.addChipTerminator('\n', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_CURRENT_TOKEN);
 
-        nachoTextView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                nachoTextView.showDropDown();
-                return false;
-            }
+        nachoTextView.addChipTerminator(',', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_TO_TERMINATOR);
 
-        });
+        nachoTextView.setText("abc, def,");
+
+//        nachoTextView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                nachoTextView.showDropDown();
+//                return false;
+//            }
+//
+//        });
 
     }
 

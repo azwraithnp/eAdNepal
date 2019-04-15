@@ -60,7 +60,12 @@ public class SettingsFragment extends Fragment {
 
         final SharedPreferences mPrefs = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
 
-        ((Dashboard)getActivity()).changeText("Settings");
+        if(getActivity() !=null)
+        {
+            ((Dashboard)getActivity()).changeText("Settings");
+            ((Dashboard)getActivity()).currentFragment="SettingsFragment";
+        }
+
 
         assert getArguments() != null;
 

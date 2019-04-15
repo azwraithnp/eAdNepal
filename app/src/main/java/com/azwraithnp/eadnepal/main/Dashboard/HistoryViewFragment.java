@@ -41,6 +41,11 @@ public class HistoryViewFragment extends Fragment {
 
         HistoryAdapter historyAdapter = new HistoryAdapter(convertGson(getArguments().getStringArrayList("history_list")));
 
+        if(getActivity() != null)
+        {
+            ((Dashboard)getActivity()).currentFragment="HistoryViewFragment";
+        }
+
         String historyType = getArguments().getString("history_type");
 
         assert historyType != null;
