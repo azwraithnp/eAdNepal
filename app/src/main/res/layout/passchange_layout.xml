@@ -1,34 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_white">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/shape_white"
     android:layout_height="match_parent">
-    <EditText
+
+    <TextView
+        android:padding="20dp"
         android:layout_gravity="center"
+        android:text="Your password must contain atleast 9 characters, 1 digit, 1 special character and 1 capital letter."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        app:passwordToggleEnabled="true"
+        android:layout_height="wrap_content">
+    <EditText
         android:id="@+id/oldPassword"
         android:inputType="textPassword"
-        android:layout_margin="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter your old password"/>
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        app:passwordToggleEnabled="true"
+        android:layout_height="wrap_content">
 
     <EditText
         android:layout_gravity="center"
         android:id="@+id/newPassword"
         android:inputType="textPassword"
-        android:layout_margin="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter your new password"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        app:passwordToggleEnabled="true"
+        android:layout_height="wrap_content">
 
     <EditText
         android:layout_gravity="center"
         android:id="@+id/newPasswordConfirm"
         android:inputType="textPassword"
-        android:layout_margin="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Confirm your new password"/>
 
+    </android.support.design.widget.TextInputLayout>
     <Button
         android:id="@+id/changePasswordButton"
         android:layout_gravity="center"
@@ -39,3 +77,4 @@
         android:text="Change my password"/>
 
 </LinearLayout>
+</ScrollView>

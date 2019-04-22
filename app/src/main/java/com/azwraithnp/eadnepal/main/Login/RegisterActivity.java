@@ -49,7 +49,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     FloatingActionButton scrollButton;
     ScrollView scrollView;
-    CustomNachoTextView nachoTextView;
     Button createAccount;
     CheckBox termsBox;
 
@@ -78,20 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!isEmpty(firstName, lastName, email, phone, age))
                 {
-                    if(nachoTextView.getChipValues().size() == 0)
-                    {
-                        nachoTextView.setError("Please enter atleast one interest!");
-                    }
-                    else if(!termsBox.isChecked())
+                    if(!termsBox.isChecked())
                     {
                         termsBox.setError("Please read and accept the terms and conditions before proceeding");
                     }
                     else
                     {
-                        List<String> interests = nachoTextView.getChipValues();
-
-                        registerUser(firstName.getText().toString(), lastName.getText().toString(), email.getText().toString(), phone.getText().toString(), age.getText().toString(), gender.getSelectedItem().toString(), location.getSelectedItem().toString(), colgName.getText().toString(), education.getSelectedItem().toString(), fieldofstudy.getSelectedItem().toString(), companyName.getText().toString(), postTitle.getText().toString(), interests
-                        );
+                        registerUser(firstName.getText().toString(), lastName.getText().toString(), email.getText().toString(), phone.getText().toString(), age.getText().toString(), gender.getSelectedItem().toString(), location.getSelectedItem().toString(), colgName.getText().toString(), education.getSelectedItem().toString(), fieldofstudy.getSelectedItem().toString(), companyName.getText().toString(), postTitle.getText().toString());
                     }
                 }
             }
@@ -103,10 +95,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 //        nachoTextView.setAdapter(adapter);
 
-
-        nachoTextView.addChipTerminator(',', ChipTerminatorHandler.BEHAVIOR_CHIPIFY_TO_TERMINATOR);
-
-        nachoTextView.setText("abc, def,");
 
 //        nachoTextView.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
@@ -120,16 +108,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void registerUser(final String firstNameText, final String lastNameText, final String emailText, final String phoneText, final String ageText, final String genderText, final String locationText, final String colgText, final String educationText, final String fieldText, final String companyText, final String postText, final List<String> interests) {
+    private void registerUser(final String firstNameText, final String lastNameText, final String emailText, final String phoneText, final String ageText, final String genderText, final String locationText, final String colgText, final String educationText, final String fieldText, final String companyText, final String postText) {
 
         // Tag used to cancel the request
         String tag_string_req = "req_register";
-        final StringBuilder interestsSeparatedByCommas = new StringBuilder();
-
-        for(String interest: interests)
-        {
-            interestsSeparatedByCommas.append(interest).append(",");
-        }
 
         progressDialog.setMessage("Creating your account....");
         showDialog();
@@ -200,7 +182,6 @@ public class RegisterActivity extends AppCompatActivity {
                 params.put("company", companyText);
                 params.put("post", postText);
                 params.put("location", locationText);
-                params.put("interest", interestsSeparatedByCommas.toString());
                 return params;
             }
 
@@ -216,7 +197,6 @@ public class RegisterActivity extends AppCompatActivity {
     {
         scrollButton = findViewById(R.id.scrollDownButton);
         scrollView = findViewById(R.id.scrollView);
-        nachoTextView = findViewById(R.id.nacho_text_view);
         createAccount = findViewById(R.id.btn_signup);
         firstName = findViewById(R.id.input_fname);
         lastName = findViewById(R.id.input_lname);

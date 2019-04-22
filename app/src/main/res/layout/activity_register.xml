@@ -204,18 +204,6 @@
                 android:hint="Post (If employed)" />
         </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <com.azwraithnp.eadnepal.main.Login.CustomNachoTextView
-                android:id="@+id/nacho_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter atleast one interest"/>
-        </android.support.design.widget.TextInputLayout>
-
         <CheckBox android:id="@+id/link_terms"
             android:layout_width="fill_parent"
             android:layout_marginTop="8dp"

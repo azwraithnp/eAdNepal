@@ -47,7 +47,6 @@ public class ProfileFragment extends Fragment {
     ProgressDialog progressDialog;
     TextView name, balance, age, gender, emailV, phone, location, date, college, field, education, company, post;
 
-    ImageView historyButton;
 
     UserModel userObj;
 
@@ -86,18 +85,6 @@ public class ProfileFragment extends Fragment {
 
         setupViews(v);
 
-        historyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HistoryFragment historyFragment = new HistoryFragment();
-
-                Bundle bundle = new Bundle();
-                bundle.putString("User", new Gson().toJson(userObj));
-                historyFragment.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyFragment).commit();
-            }
-        });
-
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
 
         checkLogin(sharedPreferences.getString("userEmail", ""), sharedPreferences.getString("userPassword", ""));
@@ -120,7 +107,6 @@ public class ProfileFragment extends Fragment {
         education = v.findViewById(R.id.educationValue);
         company = v.findViewById(R.id.companyValue);
         post = v.findViewById(R.id.postValue);
-        historyButton = v.findViewById(R.id.historyButton);
     }
 
     private void checkLogin(final String email, final String password) {

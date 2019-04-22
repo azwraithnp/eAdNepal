@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -95,8 +96,8 @@ public class HomeFragment extends Fragment {
     private List<Album> photoList;
     private List<Album> videoList;
     private List<Album> audioList;
-    private ArrayList<String> imageList;
-    private ArrayList<String> idsList;
+    private ArrayList<Album> imageList;
+    private ArrayList<String> albumTypes;
 
     private String userJSON;
 
@@ -119,7 +120,6 @@ public class HomeFragment extends Fragment {
 
     public HomeFragment() {
         // Required empty public constructor
-
     }
 
 
@@ -186,7 +186,7 @@ public class HomeFragment extends Fragment {
                 v.findViewById(R.id.indicator);
 
         photoRecyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         photoRecyclerView.setLayoutManager(mLayoutManager);
 //        recyclerView.addItemDecoration(new GridSpacingItemDecoration(albumList.size(), dpToPx(10), true));
         photoRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -242,7 +242,6 @@ public class HomeFragment extends Fragment {
                                 //Do what you want
                                 i++;
                                 progressBar.setProgress(100);
-                                dialog.cancel();
                                 transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
 
                             }
@@ -291,37 +290,30 @@ public class HomeFragment extends Fragment {
                             }
                             else
                             {
-                                String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("video", new Gson().toJson(videoList.get(position)));
+                                bundle.putString("userId", userObj.getId());
+                                bundle.putString("User", getArguments().getString("User"));
 
-                                final Dialog dialog = new Dialog(getActivity());
-                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                dialog.setContentView(R.layout.introvid);
-                                dialog.show();
+                                VideoViewFragment videoViewFragment = new VideoViewFragment();
+                                videoViewFragment.setArguments(bundle);
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("homeFragment").commit();
 
-                                TextView titleg = dialog.findViewById(R.id.title);
-                                titleg.setText(videoList.get(position).getName());
-
-                                final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
-                                videoview.setVideoPath(url);
-                                videoview.start();
-
-                                final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
-
-                                videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        prog.dismiss();
+                                String holderName = "";
+                                if(videoList.get(position).getName().length() > 15)
+                                {
+                                    for(int i=0;i<10;i++)
+                                    {
+                                        holderName+= videoList.get(position).getName().charAt(i);
                                     }
-                                });
+                                    holderName+="...";
+                                }
+                                else
+                                {
+                                    holderName = videoList.get(position).getName();
+                                }
 
-                                videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        dialog.cancel();
-                                        transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, userObj);
-
-                                    }
-                                });
+                                ((Dashboard)getActivity()).changeText(holderName);
                             }
                         }
                     }
@@ -406,7 +398,6 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onCompletion(MediaPlayer mp) {
                                         mediaPlayer.release();
-                                        dialog.cancel();
                                         stopped = true;
                                         Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
                                         transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
@@ -436,7 +427,7 @@ public class HomeFragment extends Fragment {
         dialog.setContentView(R.layout.intropicture);
         dialog.show();
 
-        final String id = idsList.get(0);
+        final String id = imageList.get(0).getId();
 
         ImageView img = dialog.findViewById(R.id.adPic);
         Glide.with(getActivity()).load(url).into(img);
@@ -477,34 +468,38 @@ public class HomeFragment extends Fragment {
 
     public void viewPagerVideo()
     {
-        String url = "http://eadnepal.com/client/pages/target video/uploads/" + imageList.get(2);
+        int position = 0;
 
-        final Dialog dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.introvid);
-        dialog.show();
-        Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
-        final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
-        videoview.setVideoPath(url);
-        videoview.start();
+        for(int i=0;i<albumTypes.size();i++)
+        {
+            if(albumTypes.get(i).equals("video"))
+                position = i;
+        }
 
-        final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+        Bundle bundle = new Bundle();
+        bundle.putString("video", new Gson().toJson(imageList.get(position)));
+        bundle.putString("userId", userObj.getId());
+        bundle.putString("User", getArguments().getString("User"));
 
-        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                prog.dismiss();
+        VideoViewFragment videoViewFragment = new VideoViewFragment();
+        videoViewFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("homeFragment").commit();
+
+        String holderName = "";
+        if(imageList.get(position).getName().length() > 15)
+        {
+            for(int i=0;i<10;i++)
+            {
+                holderName+= imageList.get(position).getName().charAt(i);
             }
-        });
+            holderName+="...";
+        }
+        else
+        {
+            holderName = imageList.get(position).getName();
+        }
 
-        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                dialog.cancel();
-                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                transferBalance(idsList.get(2), AppConfig.URL_TRANSFER_VIDEO, userObj);
-            }
-        });
+        ((Dashboard)getActivity()).changeText(holderName);
 //                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
 //                            params.height= 500;
 //                            videoview.setLayoutParams(params);
@@ -512,6 +507,15 @@ public class HomeFragment extends Fragment {
 
     public void viewPagerAudio()
     {
+
+        int position = 0;
+
+        for(int i=0;i<albumTypes.size();i++)
+        {
+            if(albumTypes.get(i).equals("audio"))
+                position = i;
+        }
+
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.intromusic);
@@ -519,7 +523,7 @@ public class HomeFragment extends Fragment {
 
         Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
 
-        String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + imageList.get(1); // your URL here
+        String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + imageList.get(position); // your URL here
         final MediaPlayer mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try
@@ -542,13 +546,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        final int finalPosition = position;
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mediaPlayer.release();
                 dialog.cancel();
                 Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                transferBalance(idsList.get(1), AppConfig.URL_TRANSFER_AUDIO, userObj);
+                transferBalance(imageList.get(finalPosition).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
             }
         });
     }
@@ -584,21 +589,25 @@ public class HomeFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         String image = dataObj.getString("doc_image");
                         String payout = dataObj.getString("reach_out_price");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, Integer.parseInt(payout), image);
+                        Album album = new Album(id, name, desc, Integer.parseInt(payout), image, email, phone, url);
                         photoList.add(album);
 
                     }
 
-                    photoList.add(new Album("999","View more", 0, "abc"));
+                    photoList.add(new Album("999","View more", "view more", 0, "abc", "vm", "vm", "vm"));
 
                     photoAdapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
                     // JSON error
-                    photoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    photoList.add(new Album("8888", "No more ads", "no ads", 0, "abc", "na", "na", "na"));
                     photoAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
@@ -669,20 +678,24 @@ public class HomeFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         int payout = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String video = dataObj.getString("video");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, payout, video);
+                        Album album = new Album(id, name, desc, payout, video, email, phone, url);
                         videoList.add(album);
                     }
 
-                    videoList.add(new Album("9999", "View more", 0, "abc"));
+                    videoList.add(new Album("9999", "View more", "view more", 0, "abc", "na", "na", "na"));
 
                     videoAdapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
 
-                    videoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    videoList.add(new Album("8888", "No more ads", "no ads", 0, "abc", "na", "na", "na"));
                     videoAdapter.notifyDataSetChanged();
                     // JSON error
                     Log.d("Video", "Video error: " + e.toString());
@@ -752,14 +765,18 @@ public class HomeFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         int payout = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String audio = dataObj.getString("audio");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, payout, audio);
+                        Album album = new Album(id, name, desc, payout, audio, email, phone, url);
                         audioList.add(album);
                     }
 
-                    audioList.add(new Album("999", "View more", 0, "abc"));
+                    audioList.add(new Album("999", "View more", "view more", 0, "abc","na","na","na"));
 
                     audioAdapter.notifyDataSetChanged();
 
@@ -767,7 +784,7 @@ public class HomeFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
-                    audioList.add(new Album("8888", "No more ads", 0, "abc"));
+                    audioList.add(new Album("8888", "No more ads", "no ads", 0, "abc","na","na","na"));
                     audioAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }
@@ -920,9 +937,9 @@ public class HomeFragment extends Fragment {
 
         imageList = new ArrayList<>();
 
-        idsList = new ArrayList<>();
+        albumTypes = new ArrayList<>();
 
-        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList,this);
+        slidingImage_adapter = new SlidingImage_Adapter(getActivity(), imageList, albumTypes,this);
 
     }
 
@@ -1092,9 +1109,8 @@ public class HomeFragment extends Fragment {
                 Log.d("Featured", "Featured Response: " + response.toString());
 
                 try {
-
-                    idsList.clear();
                     imageList.clear();
+                    albumTypes.clear();
 
                     hideDialog();
 
@@ -1102,56 +1118,52 @@ public class HomeFragment extends Fragment {
 
                     JSONArray jsonArray = jObj.getJSONArray("data");
 
-                    for(int i=0;i<jsonArray.length();i++)
-                    {
+                    for(int i=0;i<jsonArray.length();i++) {
+
                         JSONObject dataObj = jsonArray.getJSONObject(i);
+
+                        Log.d("abcd", dataObj.toString());
+                        Log.d("abcd", i + "");
 
                         int timeCount = 15;
 
-                        switch (i)
-                        {
-                            case 0:
-                                String id = dataObj.getString("id");
-                                String name = dataObj.getString("a_title");
-                                String thumbnail = dataObj.getString("doc_image");
+                        String id = dataObj.getString("id");
+                        String name = dataObj.getString("a_title");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
+                        String thumbnail = "";
+                        String albumType = "";
 
-                                Album album = new Album(id, name, timeCount, thumbnail);
-                                idsList.add(album.getId());
-                                imageList.add(album.getThumbnail());
-                                break;
-
-                            case 1:
-                                String id1 = dataObj.getString("id");
-                                String name1 = dataObj.getString("a_title");
-                                String thumbnail1 = dataObj.getString("audio");
-
-                                Album album1 = new Album(id1, name1, timeCount, thumbnail1);
-                                idsList.add(album1.getId());
-                                imageList.add(album1.getThumbnail());
-
-                                break;
-
-                            case 2:
-                                String id2 = dataObj.getString("id");
-                                String name2 = dataObj.getString("a_title");
-                                String thumbnail2 = dataObj.getString("video");
-
-                                Album album2 = new Album(id2, name2, timeCount, thumbnail2);
-                                idsList.add(album2.getId());
-                                imageList.add(album2.getThumbnail());
-                                break;
+                        try {
+                            thumbnail = dataObj.getString("doc_image");
+                            albumType = "photo";
+                        } catch (JSONException e) {
+                            try {
+                                thumbnail = dataObj.getString("audio");
+                                albumType = "audio";
+                            } catch (JSONException exc) {
+                                thumbnail = dataObj.getString("video");
+                                albumType = "video";
+                            }
                         }
 
-                    }
+                        Album album = new Album(id, name, desc, timeCount, thumbnail,email, phone, url);
+                        imageList.add(album);
+                        albumTypes.add(albumType);
 
-                    init();
+                        init();
+                    }
 
 
                 } catch (JSONException e) {
                     // JSON error
-                    Album album = new Album("8888", "No more ads", 0, "abc");
-                    idsList.add("8888");
-                    imageList.add(album.getThumbnail());
+
+                    Log.d("abcd", "error");
+
+                    Album album = new Album("8888", "No more ads", "no ads", 0, "abc", "na","na","na");
+                    imageList.add(album);
                     init();
                     e.printStackTrace();
                 }

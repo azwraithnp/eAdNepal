@@ -119,6 +119,8 @@ public class ConfirmChoose extends AppCompatActivity {
                         dialog.setContentView(R.layout.passchange_layout);
                         dialog.show();
 
+                        Toast.makeText(ConfirmChoose.this, "Please change your password for first-time login", Toast.LENGTH_SHORT).show();
+
                         Button passChangeButton = dialog.findViewById(R.id.changePasswordButton);
                         final EditText oldPasswordEnter = dialog.findViewById(R.id.oldPassword);
                         final EditText newPasswordEnter = dialog.findViewById(R.id.newPassword);
@@ -128,15 +130,25 @@ public class ConfirmChoose extends AppCompatActivity {
 
                         final String oldPassword = sharedPreferences.getString("userPassword", "");
 
+
+
                         passChangeButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if(oldPasswordEnter.getText().toString().equals(oldPassword) && !oldPasswordEnter.getText().toString().isEmpty())
                                 {
+
                                     if(newPasswordEnter.getText().toString().equals(newPasswordConfirmEnter.getText().toString()) && !newPasswordEnter.getText().toString().isEmpty() && !newPasswordConfirmEnter.getText().toString().isEmpty())
                                     {
-                                        Toast.makeText(ConfirmChoose.this, "Please change your password for first-time login", Toast.LENGTH_SHORT).show();
-                                        changePassword(user, newPasswordEnter.getText().toString());
+                                        if(containsDigitandCapital(newPasswordConfirmEnter.getText().toString()) && newPasswordConfirmEnter.getText().toString().length() >= 9)
+                                        {
+                                            Toast.makeText(ConfirmChoose.this, "Please wait..", Toast.LENGTH_SHORT).show();
+                                            changePassword(user, newPasswordEnter.getText().toString());
+                                        }
+                                        else{
+                                            newPasswordEnter.setError("Recheck your password structure as mentioned above");
+                                            newPasswordConfirmEnter.setError("Recheck your password structure as mentioned above");
+                                        }
                                     }
                                     else
                                     {
@@ -188,6 +200,23 @@ public class ConfirmChoose extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
 
 
+    }
+
+    public boolean containsDigitandCapital(String word)
+    {
+        boolean containsCapital = false;
+        boolean containsDigit = false;
+
+        for(int i=0;i<word.length();i++)
+        {
+            if(Character.isUpperCase(word.charAt(i)))
+                containsCapital =true;
+
+            if(Character.isDigit(word.charAt(i)))
+                containsDigit = true;
+        }
+
+        return (containsCapital && containsDigit);
     }
 
     public void changePassword(final UserModel user, final String newPassword)

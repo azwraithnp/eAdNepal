@@ -66,7 +66,6 @@ public class SettingsFragment extends Fragment {
             ((Dashboard)getActivity()).currentFragment="SettingsFragment";
         }
 
-
         assert getArguments() != null;
 
         final UserModel user = new Gson().fromJson(getArguments().getString("User"), UserModel.class);
@@ -110,8 +109,16 @@ public class SettingsFragment extends Fragment {
                         {
                             if(newPasswordEnter.getText().toString().equals(newPasswordConfirmEnter.getText().toString()) && !newPasswordEnter.getText().toString().isEmpty() && !newPasswordConfirmEnter.getText().toString().isEmpty())
                             {
-                                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                changePassword(user, newPasswordEnter.getText().toString());
+
+                                if(containsDigitandCapital(newPasswordConfirmEnter.getText().toString()) && newPasswordConfirmEnter.getText().toString().length() >= 9)
+                                {
+                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
+                                    changePassword(user, newPasswordEnter.getText().toString());
+                                }
+                                else{
+                                    newPasswordEnter.setError("Recheck your password structure as mentioned above");
+                                    newPasswordConfirmEnter.setError("Recheck your password structure as mentioned above");
+                                }
                             }
                             else
                             {
@@ -130,6 +137,23 @@ public class SettingsFragment extends Fragment {
         });
 
         return v;
+    }
+
+    public boolean containsDigitandCapital(String word)
+    {
+        boolean containsCapital = false;
+        boolean containsDigit = false;
+
+        for(int i=0;i<word.length();i++)
+        {
+            if(Character.isUpperCase(word.charAt(i)))
+                containsCapital =true;
+
+            if(Character.isDigit(word.charAt(i)))
+                containsDigit = true;
+        }
+
+        return (containsCapital && containsDigit);
     }
 
     public void changePassword(final UserModel user, final String newPassword)

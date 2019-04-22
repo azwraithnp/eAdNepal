@@ -227,6 +227,15 @@ public class Dashboard extends AppCompatActivity {
                                 toolbarText.setText("Profile");
                                 break;
 
+                            case R.id.nav_history:
+
+                                HistoryFragment historyFragment = new HistoryFragment();
+                                historyFragment.setArguments(bundle);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.frame, historyFragment).commit();
+
+                                toolbarText.setText("History");
+                                break;
+
                             case R.id.nav_home:
 
                                 HomeFragment homeFragment1 = new HomeFragment();

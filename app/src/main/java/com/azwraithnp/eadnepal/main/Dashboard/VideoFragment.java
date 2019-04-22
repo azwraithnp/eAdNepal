@@ -116,36 +116,29 @@ public class VideoFragment extends Fragment {
                         else {
 
 
-                            String url = "http://eadnepal.com/client/pages/target video/uploads/" + videoList.get(position).getThumbnail();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("video", new Gson().toJson(videoList.get(position)));
+                            bundle.putString("userId", user.getId());
 
-                            final Dialog dialog = new Dialog(getActivity());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.introvid);
-                            dialog.show();
-                            Toast.makeText(getActivity(), "Loading..", Toast.LENGTH_SHORT).show();
-                            TextView title = dialog.findViewById(R.id.title);
-                            final VideoView videoview = (VideoView) dialog.findViewById(R.id.videoView);
-                            title.setText(videoList.get(position).getName());
-                            videoview.setVideoPath(url);
-                            videoview.start();
+                            VideoViewFragment videoViewFragment = new VideoViewFragment();
+                            videoViewFragment.setArguments(bundle);
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("homeFragment").commit();
 
-                            final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
-
-                            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    prog.dismiss();
+                            String holderName = "";
+                            if(videoList.get(position).getName().length() > 15)
+                            {
+                                for(int i=0;i<10;i++)
+                                {
+                                    holderName+= videoList.get(position).getName().charAt(i);
                                 }
-                            });
+                                holderName+="...";
+                            }
+                            else
+                            {
+                                holderName = videoList.get(position).getName();
+                            }
 
-                            videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    dialog.cancel();
-                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                    transferBalance(videoList.get(position).getId(), AppConfig.URL_TRANSFER_VIDEO, user);
-                                }
-                            });
+                            ((Dashboard)getActivity()).changeText(holderName);
 
 
 //                            ViewGroup.LayoutParams params=videoview.getLayoutParams();
@@ -252,10 +245,14 @@ public class VideoFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String video = dataObj.getString("video");
+                        String des = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, payOut, video);
+                        Album album = new Album(id, name, des, payOut, video, email, phone, url);
                         videoList.add(album);
                     }
 
@@ -263,7 +260,7 @@ public class VideoFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
-                    videoList.add(new Album("8888", "No more ads", 0, "abc"));
+                    videoList.add(new Album("8888", "No more ads", "no ads", 0, "abc", "na", "na", "na"));
                     cardAdapter.notifyDataSetChanged();
                     Log.d("Video", "Video error:" + e.toString());
                 }

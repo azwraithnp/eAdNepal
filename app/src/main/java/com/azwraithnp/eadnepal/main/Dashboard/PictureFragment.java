@@ -270,10 +270,14 @@ public class PictureFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String image = dataObj.getString("doc_image");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, payOut, image);
+                        Album album = new Album(id, name, desc, payOut, image, email, phone, url);
                         imageList.add(album);
 
                     }
@@ -282,7 +286,7 @@ public class PictureFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
-                    imageList.add(new Album("8888", "No more ads", 0, "abc"));
+                    imageList.add(new Album("8888", "No more ads", "no ads", 0, "abc", "na", "na", "na"));
                     cardAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }

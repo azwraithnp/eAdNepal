@@ -262,10 +262,14 @@ public class AudioFragment extends Fragment {
                         String name = dataObj.getString("a_title");
                         int payOut = Integer.parseInt(dataObj.getString("reach_out_price"));
                         String audio = dataObj.getString("audio");
+                        String desc = dataObj.getString("des");
+                        String email = dataObj.getString("email");
+                        String phone = dataObj.getString("phone");
+                        String url = dataObj.getString("url");
 
                         String id = dataObj.getString("id");
 
-                        Album album = new Album(id, name, payOut, audio);
+                        Album album = new Album(id, name, desc, payOut, audio, email, phone, url);
                         audioList.add(album);
                     }
 
@@ -276,7 +280,7 @@ public class AudioFragment extends Fragment {
 
                 } catch (JSONException e) {
                     // JSON error
-                    audioList.add(new Album("8888", "No more ads", 0, "abc"));
+                    audioList.add(new Album("8888", "No more ads", "no ads", 0, "abc", "na", "na", "na"));
                     cardAdapter.notifyDataSetChanged();
                     e.printStackTrace();
                 }

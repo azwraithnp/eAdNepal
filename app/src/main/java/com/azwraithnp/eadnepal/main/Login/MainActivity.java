@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,7 +47,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     Button loginButton, registerButton;
-    EditText email, password;
+    EditText email;
+    EditText password;
     ProgressDialog progressDialog;
 
     TextView forgotPassword;

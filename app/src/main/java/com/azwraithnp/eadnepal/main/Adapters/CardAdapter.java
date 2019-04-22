@@ -30,7 +30,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         public TextView title, count;
         public ImageView thumbnail;
         public ImageView overflow;
-        public CardView cardView;
 
         public MyViewHolder(View view) {
             super(view);
@@ -38,7 +37,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             count = view.findViewById(R.id.count);
             thumbnail = view.findViewById(R.id.thumbnail);
             overflow = view.findViewById(R.id.overflow);
-            cardView = view.findViewById(R.id.card_view);
         }
     }
 
@@ -81,7 +79,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
 
         if(displayType.equals("audio") || displayType.equals("video") || displayType.equals("photo"))
         {
-            itemView.getLayoutParams().width = (int)(getScreenWidth() / 3);
+            itemView.getLayoutParams().width = (int)(getScreenWidth() * 0.4);
         }
 
         return new MyViewHolder(itemView);
@@ -131,7 +129,21 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         }
         else
         {
-            holder.title.setText(album.getName());
+            String holderName = "";
+            if(album.getName().length() > 15)
+            {
+                for(int i=0;i<10;i++)
+                {
+                    holderName+= album.getName().charAt(i);
+                }
+                holderName+="...";
+            }
+            else
+            {
+                holderName = album.getName();
+            }
+
+            holder.title.setText(holderName);
             double payout = 0.7 * album.getTimeCount();
             holder.count.setText("Payout: "+ "Rs." + payout);
             //  loading album cover using Glide library
