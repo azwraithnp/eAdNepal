@@ -127,7 +127,17 @@ public class ChooseActivity extends AppCompatActivity {
                         final int shortAnimationDuration = getResources().getInteger(
                                 android.R.integer.config_longAnimTime);
 
-                        clickedIds.add(idsList.get(position));
+                        int incrementCount = 0;
+
+                        if(setIndex == 1)
+                        {
+                            incrementCount = 4;
+                        }
+                        else if(setIndex == 2)
+                        {
+                            incrementCount = 8;
+                        }
+                        clickedIds.add(incrementCount + idsList.get(position));
 
                         idsList.set(position, idsList.get(position) + 4);
 

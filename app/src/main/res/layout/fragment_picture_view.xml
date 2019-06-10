@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".main.Dashboard.PictureViewFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/pictureTitle"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/shape_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Time remaining : 15 seconds"
+            android:textAlignment="center"
+            android:padding="10dp"
+            android:textStyle="bold|italic"
+            android:textSize="20sp" />
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/pictureTitle"
+        android:id="@+id/adPic"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"/>
+
+        <TextView
+            android:layout_below="@id/adPic"
+            android:id="@+id/title"
+            android:padding="15dp"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Graphics Design"/>
+
+        <LinearLayout
+            android:id="@+id/buttonsBar"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/phoneButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_phone_24px"
+                android:layout_weight="1"
+                />
+
+            <ImageView
+                android:id="@+id/emailButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_email_24px"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/webButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_public_24"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_more_vert_24"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:padding="15dp"
+            android:textSize="15sp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/descText"
+            android:layout_below="@id/buttonsBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This is the description for the video. There are many details that can be kept here by the client like:
+- Product Description
+- Target audience"/>
+
+
+    </RelativeLayout>
+    </ScrollView>
+
+</FrameLayout>

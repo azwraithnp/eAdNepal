@@ -192,7 +192,7 @@ public class HomeFragment extends Fragment {
         photoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         photoRecyclerView.setAdapter(photoAdapter);
         photoRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), photoRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
-            @Override public void onItemClick(View view, int position)
+            @Override public void onItemClick(View view, final int position)
             {
                 if(photoList.get(position).getId().equals("8888"))
                 {
@@ -209,52 +209,32 @@ public class HomeFragment extends Fragment {
                     }
                     else
                     {
+                        Log.d("sizeArray", photoList.size() + " : " + position);
 
-                        String url = "http://eadnepal.com/client/pages/target/uploads/" + photoList.get(position).getThumbnail();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("picture", new Gson().toJson(photoList.get(position)));
+                        bundle.putString("userId", userObj.getId());
+                        bundle.putString("contentType", "picture");
 
-                        final Dialog dialog = new Dialog(getActivity());
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(R.layout.intropicture);
-                        dialog.show();
+                        PictureViewFragment pictureViewFragment = new PictureViewFragment();
+                        pictureViewFragment.setArguments(bundle);
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureViewFragment).addToBackStack("homeFragment").commit();
 
-                        final String id = photoList.get(position).getId();
-
-                        ImageView img = dialog.findViewById(R.id.adPic);
-                        Glide.with(getActivity()).load(url).into(img);
-
-                        TextView titleg = dialog.findViewById(R.id.title);
-                        titleg.setText(photoList.get(position).getName());
-
-                        progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
-                        progressBar.setProgress(0);
-                        countDownTimer=new CountDownTimer(15000,1000) {
-
-                            int i=0;
-                            @Override
-                            public void onTick(long millisUntilFinished) {
-                                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                                i++;
-                                progressBar.setProgress((int)i*100/(15000/1000));
+                        String holderName = "";
+                        if(photoList.get(position).getName().length() > 15)
+                        {
+                            for(int i=0;i<10;i++)
+                            {
+                                holderName+= photoList.get(position).getName().charAt(i);
                             }
+                            holderName+="...";
+                        }
+                        else
+                        {
+                            holderName = photoList.get(position).getName();
+                        }
 
-                            @Override
-                            public void onFinish() {
-                                //Do what you want
-                                i++;
-                                progressBar.setProgress(100);
-                                transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
-
-                            }
-                        };
-                        countDownTimer.start();
-
-                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                countDownTimer.cancel();
-                                countDownTimer = null;
-                            }
-                        });
+                        ((Dashboard)getActivity()).changeText(holderName);
 
                     }
                 }
@@ -294,6 +274,7 @@ public class HomeFragment extends Fragment {
                                 bundle.putString("video", new Gson().toJson(videoList.get(position)));
                                 bundle.putString("userId", userObj.getId());
                                 bundle.putString("User", getArguments().getString("User"));
+                                bundle.putString("contentType", "video");
 
                                 VideoViewFragment videoViewFragment = new VideoViewFragment();
                                 videoViewFragment.setArguments(bundle);
@@ -350,60 +331,30 @@ public class HomeFragment extends Fragment {
                             }
                             else
                             {
-                                final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("video", new Gson().toJson(audioList.get(position)));
+                                bundle.putString("userId", userObj.getId());
+                                bundle.putString("contentType", "audio");
 
-                                final Dialog dialog = new Dialog(getActivity());
-                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                dialog.setContentView(R.layout.intromusic);
-                                dialog.show();
+                                VideoViewFragment videoViewFragment = new VideoViewFragment();
+                                videoViewFragment.setArguments(bundle);
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("audioFragment").commit();
 
-                                TextView titleg = dialog.findViewById(R.id.title);
-                                titleg.setText(audioList.get(position).getName());
-
-                                Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
-
-                                String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
-                                final MediaPlayer mediaPlayer = new MediaPlayer();
-                                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                try
+                                String holderName = "";
+                                if(audioList.get(position).getName().length() > 15)
                                 {
-                                    mediaPlayer.setDataSource(url);
-                                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                                    for(int i=0;i<10;i++)
+                                    {
+                                        holderName+= audioList.get(position).getName().charAt(i);
+                                    }
+                                    holderName+="...";
                                 }
-                                catch (IOException e)
+                                else
                                 {
-                                    e.printStackTrace();
+                                    holderName = audioList.get(position).getName();
                                 }
-                                mediaPlayer.start();
 
-                                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        prog.dismiss();
-                                    }
-                                });
-
-                                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        if(!stopped)
-                                        {
-                                           mediaPlayer.stop();
-                                           mediaPlayer.release();
-                                        }
-                                    }
-                                });
-
-                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        mediaPlayer.release();
-                                        stopped = true;
-                                        Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                        transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
-
-                                    }
-                                });
+                                ((Dashboard)getActivity()).changeText(holderName);
                             }
                         }
 
@@ -420,49 +371,30 @@ public class HomeFragment extends Fragment {
 
     public void viewPagerPicture()
     {
-        String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(0);
+        Bundle bundle = new Bundle();
+        bundle.putString("picture", new Gson().toJson(imageList.get(0)));
+        bundle.putString("userId", userObj.getId());
+        bundle.putString("contentType", "picture");
 
-        final Dialog dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.intropicture);
-        dialog.show();
+        PictureViewFragment pictureViewFragment = new PictureViewFragment();
+        pictureViewFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureViewFragment).addToBackStack("pictureFragment").commit();
 
-        final String id = imageList.get(0).getId();
-
-        ImageView img = dialog.findViewById(R.id.adPic);
-        Glide.with(getActivity()).load(url).into(img);
-
-        progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
-        progressBar.setProgress(0);
-        countDownTimer=new CountDownTimer(15000,1000) {
-
-            int i=0;
-            @Override
-            public void onTick(long millisUntilFinished) {
-                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                i++;
-                progressBar.setProgress((int)i*100/(15000/1000));
+        String holderName = "";
+        if(imageList.get(0).getName().length() > 15)
+        {
+            for(int i=0;i<10;i++)
+            {
+                holderName+= imageList.get(0).getName().charAt(i);
             }
+            holderName+="...";
+        }
+        else
+        {
+            holderName = imageList.get(0).getName();
+        }
 
-            @Override
-            public void onFinish() {
-                //Do what you want
-                i++;
-                progressBar.setProgress(100);
-                dialog.cancel();
-                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                transferBalance(id, AppConfig.URL_TRANSFER_PICTURE, userObj);
-            }
-        };
-        countDownTimer.start();
-
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                countDownTimer.cancel();
-                countDownTimer = null;
-            }
-        });
+        ((Dashboard)getActivity()).changeText(holderName);
 
     }
 
@@ -480,6 +412,7 @@ public class HomeFragment extends Fragment {
         bundle.putString("video", new Gson().toJson(imageList.get(position)));
         bundle.putString("userId", userObj.getId());
         bundle.putString("User", getArguments().getString("User"));
+        bundle.putString("contentType", "video");
 
         VideoViewFragment videoViewFragment = new VideoViewFragment();
         videoViewFragment.setArguments(bundle);
@@ -516,46 +449,30 @@ public class HomeFragment extends Fragment {
                 position = i;
         }
 
-        final Dialog dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.intromusic);
-        dialog.show();
+        Bundle bundle = new Bundle();
+        bundle.putString("video", new Gson().toJson(audioList.get(position)));
+        bundle.putString("userId", userObj.getId());
+        bundle.putString("contentType", "audio");
 
-        Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
+        VideoViewFragment videoViewFragment = new VideoViewFragment();
+        videoViewFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("audioFragment").commit();
 
-        String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + imageList.get(position); // your URL here
-        final MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try
+        String holderName = "";
+        if(audioList.get(position).getName().length() > 15)
         {
-            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+            for(int i=0;i<10;i++)
+            {
+                holderName+= audioList.get(position).getName().charAt(i);
+            }
+            holderName+="...";
         }
-        catch (IOException e)
+        else
         {
-            e.printStackTrace();
+            holderName = audioList.get(position).getName();
         }
-        mediaPlayer.start();
 
-        final ProgressDialog prog = ProgressDialog.show(getActivity(), "Please wait ...", "Retrieving data ...", true, false);
-
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                prog.dismiss();
-            }
-        });
-
-        final int finalPosition = position;
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mediaPlayer.release();
-                dialog.cancel();
-                Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                transferBalance(imageList.get(finalPosition).getId(), AppConfig.URL_TRANSFER_AUDIO, userObj);
-            }
-        });
+        ((Dashboard)getActivity()).changeText(holderName);
     }
 
     public void retrieveImages(final UserModel user)

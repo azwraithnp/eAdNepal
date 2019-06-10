@@ -167,6 +167,12 @@ public class SettingsFragment extends Fragment {
             public void onResponse(String response) {
                 Log.d("Password change", "Password change Response: " + response.toString());
 
+                final SharedPreferences mPrefs = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
+
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean("autologin", false);
+                editor.apply();
+
                 try {
 
                     JSONObject jObj = new JSONObject(response);
@@ -175,9 +181,9 @@ public class SettingsFragment extends Fragment {
                     {
                         Toast.makeText(getActivity(), "Password changed successfully", Toast.LENGTH_SHORT).show();
                         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userPref", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        SharedPreferences.Editor editor2 = sharedPreferences.edit();
                         editor.putString("user", "");
-                        editor.commit();
+                        editor.apply();
 
                         startActivity(new Intent(getActivity(), MainActivity.class));
                     }

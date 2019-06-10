@@ -63,6 +63,8 @@ public class VideoViewFragment extends Fragment {
 
     TextView title, description;
     ImageView phone, email, website;
+
+    ImageView audioIcon;
 //    VideoView videoView;
 
     private SimpleExoPlayer player;
@@ -75,6 +77,10 @@ public class VideoViewFragment extends Fragment {
     private boolean playWhenReady = true;
     private ComponentListener componentListener;
     ExtendedTimeBar defaultTimeBar;
+
+    Album video;
+    String transferUrl;
+
     String url;
 
     public VideoViewFragment() {
@@ -98,11 +104,60 @@ public class VideoViewFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_video_view, container, false);
 
+        Log.d("HERE", "HERE");
+
         title = v.findViewById(R.id.title);
         description = v.findViewById(R.id.descText);
         phone = v.findViewById(R.id.phoneButton);
         email = v.findViewById(R.id.emailButton);
         website = v.findViewById(R.id.webButton);
+
+        audioIcon = v.findViewById(R.id.soundIcon);
+
+        video = new Gson().fromJson(getArguments().getString("video"), Album.class);
+
+        Log.d("VIDEOURL", video.getThumbnail());
+        Log.d("VIDEOURL", getArguments().getString("contentType"));
+
+        if(getArguments().getString("contentType").equals("video"))
+        {
+            transferUrl = AppConfig.URL_TRANSFER_VIDEO;
+            url = "https://eadnepal.com/client/pages/target video/uploads/" + video.getThumbnail();
+            String reformedUrl = "";
+            for(int i=0;i<url.length();i++)
+            {
+                if(url.charAt(i) == ' ')
+                {
+                    reformedUrl+="%20";
+                }
+                else
+                {
+                    reformedUrl+=url.charAt(i);
+                }
+            }
+            url = reformedUrl;
+            audioIcon.setVisibility(View.GONE);
+        }
+        else
+        {
+            transferUrl = AppConfig.URL_TRANSFER_AUDIO;
+            url = "https://eadnepal.com/client/pages/target audio/uploads/" + video.getThumbnail();
+            String reformedUrl = "";
+            for(int i=0;i<url.length();i++)
+            {
+                if(url.charAt(i) == ' ')
+                {
+                    reformedUrl+="%20";
+                }
+                else
+                {
+                    reformedUrl+=url.charAt(i);
+                }
+            }
+            url = reformedUrl;
+            Log.d("AUDIOCHECK", reformedUrl);
+            audioIcon.setVisibility(View.VISIBLE);
+        }
 
 //        videoView = v.findViewById(R.id.videoView);
         playerView = v.findViewById(R.id.videoView);
@@ -110,14 +165,7 @@ public class VideoViewFragment extends Fragment {
         defaultTimeBar.setEnabled(false);
         defaultTimeBar.setForceDisabled(true);
 
-        final Album video = new Gson().fromJson(getArguments().getString("video"), Album.class);
-
         title.setText(video.getName());
-
-//        url = "http://eadnepal.com/client/pages/target video/uploads/" + video.getThumbnail();
-
-        url = "http://eadnepal.com/client/pages/target audio/uploads/sample.mp3";
-
 
         Log.d("video_url", url);
 
@@ -257,6 +305,8 @@ public class VideoViewFragment extends Fragment {
     {
         String tag_string_req = "req_transfer";
 
+        Log.d("transferLOG",  "Media id: " + mediaId + " Url: " + url + "UserID: " + userId);
+
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 url, new Response.Listener<String>() {
 
@@ -335,7 +385,7 @@ public class VideoViewFragment extends Fragment {
                         if(!balanceTransferred)
                         {
                             balanceTransferred = true;
-                            transferBalance(getArguments().getString("videoId"), AppConfig.URL_TRANSFER_VIDEO, getArguments().getString("userId"));
+                            transferBalance(video.getId(), transferUrl, getArguments().getString("userId"));
                         }
                     }
                     break;

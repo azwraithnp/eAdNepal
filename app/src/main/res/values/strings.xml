@@ -86,6 +86,9 @@
         <item value="Udayapur">Udayapur</item>
     </string-array>
 
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="default_notification_channel_name" translatable="true">General</string>
+
     <string-array name="education">
         <item>SLC/SEE</item>
         <item>+2 Higher Education</item>

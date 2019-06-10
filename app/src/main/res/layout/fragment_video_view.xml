@@ -16,6 +16,16 @@
             app:resize_mode="fill"
             android:layout_height="300dp"/>
 
+        <ImageView
+            android:id="@+id/soundIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_alignTop="@id/videoView"
+            android:layout_marginTop="75dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/audio"
+             />
+
         <TextView
             android:layout_below="@id/videoView"
             android:id="@+id/title"

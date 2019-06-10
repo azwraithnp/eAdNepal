@@ -119,6 +119,7 @@ public class VideoFragment extends Fragment {
                             Bundle bundle = new Bundle();
                             bundle.putString("video", new Gson().toJson(videoList.get(position)));
                             bundle.putString("userId", user.getId());
+                            bundle.putString("contentType", "video");
 
                             VideoViewFragment videoViewFragment = new VideoViewFragment();
                             videoViewFragment.setArguments(bundle);

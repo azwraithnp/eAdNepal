@@ -133,6 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     if(status_message.equals("Logged In"))
                     {
+
                         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
                         builder.setMessage(data);
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -147,6 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 } catch (JSONException e) {
                     // JSON error
+                    Log.d("Register", "Response error: " + e.toString());
                     e.printStackTrace();
                 }
 

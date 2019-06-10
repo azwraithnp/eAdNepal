@@ -56,20 +56,20 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_card_photo, parent, false);
-            displayUrl = "http://eadnepal.com/client/pages/target/uploads/";
+            displayUrl = "https://eadnepal.com/client/pages/target/uploads/";
         }
         else if(displayType.equals("video") || displayType.equals("videoall"))
         {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_card_video, parent, false);
-            displayUrl = "http://eadnepal.com/client/pages/target%20video/uploads/";
+            displayUrl = "https://eadnepal.com/client/pages/target%20video/uploads/";
 
         }
         else if(displayType.equals("audio") || displayType.equals("audioall"))
         {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_card_audio, parent, false);
-            displayUrl = "http://eadnepal.com/client/pages/target%20audio/uploads/";
+            displayUrl = "https://eadnepal.com/client/pages/target%20audio/uploads/";
         }
         else
         {
@@ -103,6 +103,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         if(album.getName().equals("View more"))
         {
             holder.title.setText(album.getName());
+            holder.thumbnail.setScaleType(ImageView.ScaleType.FIT_XY);
             Glide.with(mContext).load(R.drawable.ic_baseline_add_24px).into(holder.thumbnail);
             holder.thumbnail.setPadding(60, 100, 60, 100);
             if(!displayType.equals("photo"))
@@ -149,7 +150,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             //  loading album cover using Glide library
             if(displayType.equals("audio") || displayType.equals("audioall"))
             {
-                Glide.with(mContext).load(R.drawable.baseline_music_note_black_48dp).into(holder.thumbnail);
+                Glide.with(mContext).load(R.drawable.audio).into(holder.thumbnail);
             }
             else
             {

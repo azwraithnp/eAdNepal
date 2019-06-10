@@ -1,6 +1,8 @@
 package com.azwraithnp.eadnepal.main.Login;
 
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -60,15 +63,34 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = getString(R.string.default_notification_channel_id);
+            String channelName = getString(R.string.default_notification_channel_name);
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW));
+        }
+
+        // If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this sample the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d("tag", "Key: " + key + " Value: " + value);
+            }
+        }
+
         new GetVersionCode().execute();
 
-        SharedPreferences sharedPreferences = getSharedPreferences("userPref", MODE_PRIVATE);
-
-        if(!(sharedPreferences.getString("user", "").equals("")) && sharedPreferences.getBoolean("autologin", true))
-        {
-            startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", sharedPreferences.getString("user", "")));
-            finish();
-        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,6 +214,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.d("update", "Current version " + currentVersion + "playstore version " + onlineVersion);
+
+
+            SharedPreferences sharedPreferences = getSharedPreferences("userPref", MODE_PRIVATE);
+
+            if(!(sharedPreferences.getString("user", "").equals("")) && sharedPreferences.getBoolean("autologin", true))
+            {
+                startActivity(new Intent(MainActivity.this, Dashboard.class).putExtra("User", sharedPreferences.getString("user", "")));
+                finish();
+            }
 
         }
 

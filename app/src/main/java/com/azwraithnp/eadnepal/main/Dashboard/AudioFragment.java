@@ -120,49 +120,31 @@ public class AudioFragment extends Fragment {
 
                         }
                         else {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("video", new Gson().toJson(audioList.get(position)));
+                            bundle.putString("userId", user.getId());
+                            bundle.putString("contentType", "audio");
 
+                            VideoViewFragment videoViewFragment = new VideoViewFragment();
+                            videoViewFragment.setArguments(bundle);
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, videoViewFragment).addToBackStack("audioFragment").commit();
 
-                            final Dialog dialog = new Dialog(getActivity());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.intromusic);
-                            dialog.show();
-
-                            Toast.makeText(getActivity(), "Now Playing..", Toast.LENGTH_SHORT).show();
-                            TextView title = dialog.findViewById(R.id.title);
-                            title.setText(audioList.get(position).getName());
-
-                            String url = "http://eadnepal.com/client/pages/target%20audio/uploads/" + audioList.get(position).getThumbnail(); // your URL here
-                            final MediaPlayer mediaPlayer = new MediaPlayer();
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            try {
-                                mediaPlayer.setDataSource(url);
-                                mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            String holderName = "";
+                            if(audioList.get(position).getName().length() > 15)
+                            {
+                                for(int i=0;i<10;i++)
+                                {
+                                    holderName+= audioList.get(position).getName().charAt(i);
+                                }
+                                holderName+="...";
                             }
-                            mediaPlayer.start();
+                            else
+                            {
+                                holderName = audioList.get(position).getName();
+                            }
 
-                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    if(!stopped)
-                                    {
-                                        mediaPlayer.stop();
-                                        mediaPlayer.release();
-                                    }
-                                }
-                            });
+                            ((Dashboard)getActivity()).changeText(holderName);
 
-                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    dialog.cancel();
-                                    mediaPlayer.release();
-                                    stopped = true;
-                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                    transferBalance(audioList.get(position).getId(), AppConfig.URL_TRANSFER_AUDIO, user);
-                                }
-                            });
                         }
                     }
                     @Override public void onLongItemClick(View view, int position)

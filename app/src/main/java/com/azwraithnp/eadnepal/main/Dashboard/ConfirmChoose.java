@@ -95,14 +95,14 @@ public class ConfirmChoose extends AppCompatActivity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.URL_INTERESTS_LIST, new Response.Listener<String>() {
+                AppConfig.URL_SELECT_INTEREST, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
 
                 hideDialog();
 
-                Log.d("Interests", "Interests Response: " + response.toString());
+                Log.d("Save Interests", "Save Interests Response: " + response.toString());
 
                 try {
 

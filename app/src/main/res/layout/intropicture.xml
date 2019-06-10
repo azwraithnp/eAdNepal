@@ -42,6 +42,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/adPhone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_phone_24px"
@@ -49,12 +50,14 @@
             />
 
         <ImageView
+            android:id="@+id/adEmail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_email_24px"
             android:layout_weight="1"/>
 
         <ImageView
+            android:id="@+id/adWeb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_public_24"

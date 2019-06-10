@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,18 +55,25 @@ public class SlidingImage_Adapter extends PagerAdapter {
 
         int layout_file = 0;
 
+        Log.d("DEBUG_TEST", "Size: " + imageList.size() + ":" + albumTypes.size());
+
+        layout_file = R.layout.empty_slidingimage_layout;
+
         if(imageList.get(position).equals("abc"))
         {
             layout_file = R.layout.empty_slidingimage_layout;
         }
         else
         {
-            if(!albumTypes.get(position).equals("photo")) {
-                layout_file = R.layout.slidingimages_play_layout;
-            }
-            else
+            if(albumTypes.size() > 0)
             {
-                layout_file = R.layout.slidingimages_layout;
+                if(!albumTypes.get(position).equals("photo")) {
+                    layout_file = R.layout.slidingimages_play_layout;
+                }
+                else
+                {
+                    layout_file = R.layout.slidingimages_layout;
+                }
             }
         }
 
@@ -79,16 +87,19 @@ public class SlidingImage_Adapter extends PagerAdapter {
 
                 }
                 else {
-                    if(albumTypes.get(position).equals("photo"))
+                    if(albumTypes.size() > 0)
                     {
-                        homeFragment.viewPagerPicture();
-                    }
-                    else if(albumTypes.get(position).equals("audio"))
-                    {
-                        homeFragment.viewPagerAudio();
-                    }
-                    else{
-                        homeFragment.viewPagerVideo();
+                        if(albumTypes.get(position).equals("photo"))
+                        {
+                            homeFragment.viewPagerPicture();
+                        }
+                        else if(albumTypes.get(position).equals("audio"))
+                        {
+                            homeFragment.viewPagerAudio();
+                        }
+                        else{
+                            homeFragment.viewPagerVideo();
+                        }
                     }
                 }
             }
@@ -98,16 +109,20 @@ public class SlidingImage_Adapter extends PagerAdapter {
         final ImageView imageView = (ImageView) imageLayout
                 .findViewById(R.id.image);
 
-        if(albumTypes.get(position).equals("photo"))
+        if(albumTypes.size() > 0)
         {
-            Glide.with(context).load("http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail()).into(imageView);
-        }
-        else if(albumTypes.get(position).equals("audio"))
-        {
-            Glide.with(context).load(R.drawable.baseline_music_note_black_48dp).into(imageView);
-        }
-        else{
-            Glide.with(context).load("http://eadnepal.com/client/pages/target video/uploads/" + imageList.get(position).getThumbnail()).into(imageView);
+            if(albumTypes.get(position).equals("photo"))
+            {
+                Glide.with(context).load("https://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail()).into(imageView);
+            }
+            else if(albumTypes.get(position).equals("audio"))
+            {
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                Glide.with(context).load(R.drawable.audio).into(imageView);
+            }
+            else{
+                Glide.with(context).load("https://eadnepal.com/client/pages/target video/uploads/" + imageList.get(position).getThumbnail()).into(imageView);
+            }
         }
 
 //        switch (position)

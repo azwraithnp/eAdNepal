@@ -3,7 +3,9 @@ package com.azwraithnp.eadnepal.main.Dashboard;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -119,49 +121,32 @@ public class PictureFragment extends Fragment {
                         }
                         else
                         {
-                            String url = "http://eadnepal.com/client/pages/target/uploads/" + imageList.get(position).getThumbnail();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("picture", new Gson().toJson(imageList.get(position)));
+                            bundle.putString("userId", user.getId());
+                            bundle.putString("contentType", "picture");
 
-                            final Dialog dialog = new Dialog(getActivity());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.intropicture);
-                            dialog.show();
+                            PictureViewFragment pictureViewFragment = new PictureViewFragment();
+                            pictureViewFragment.setArguments(bundle);
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, pictureViewFragment).addToBackStack("pictureFragment").commit();
 
-                            TextView title = dialog.findViewById(R.id.title);
-                            ImageView img = dialog.findViewById(R.id.adPic);
-                            Glide.with(getActivity()).load(url).into(img);
-                            title.setText(imageList.get(position).getName());
-
-                            final ProgressBar progressBar=(ProgressBar)dialog.findViewById(R.id.progressbar);
-                            progressBar.setProgress(0);
-                            countDownTimer=new CountDownTimer(15000,1000) {
-
-                                int i=0;
-                                @Override
-                                public void onTick(long millisUntilFinished) {
-                                    Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                                    i++;
-                                    progressBar.setProgress((int)i*100/(15000/1000));
+                            String holderName = "";
+                            if(imageList.get(position).getName().length() > 15)
+                            {
+                                for(int i=0;i<10;i++)
+                                {
+                                    holderName+= imageList.get(position).getName().charAt(i);
                                 }
+                                holderName+="...";
+                            }
+                            else
+                            {
+                                holderName = imageList.get(position).getName();
+                            }
 
-                                @Override
-                                public void onFinish() {
-                                    //Do what you want
-                                    i++;
-                                    progressBar.setProgress(100);
-                                    dialog.cancel();
-                                    Toast.makeText(getActivity(), "Please wait..", Toast.LENGTH_SHORT).show();
-                                    transferBalance(imageList.get(position).getId(), AppConfig.URL_TRANSFER_PICTURE, user);
-                                }
-                            };
-                            countDownTimer.start();
+                            ((Dashboard)getActivity()).changeText(holderName);
 
-                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    countDownTimer.cancel();
-                                    countDownTimer = null;
-                                }
-                            });
+
                         }
 
 
